@@ -1,19 +1,22 @@
+# Quiz Platform — Projekt 2, 2. Semester
 
-<img width="384" height="192" alt="image" src="https://github.com/user-attachments/assets/81a8f570-3da4-4dfa-8754-7cb3f24eb080" />
+> Vue + Express · 3 arbejdsdage · Emne: Datastrukturer
 
+Et fullstack quiz-system med rollebaseret adgang (admin/bruger), XML-baserede quizzer og aktivitetslog.
 
-# Projekt A, 2. Semester - PB Webudvikling
+---
 
-Et fullstack-projekt med en **Vue 3**-klient og en **Express**-server.
+## Tech Stack
 
-## Funktioner
-- Opret bruger (register)
-- Login / logout
-- Validering af formularer
-- Password hashing
-- Rate limiting på login/register
-- Simpel lagring af brugere
+| Lag       | Teknologi                            |
+|-----------|--------------------------------------|
+| Frontend  | Vue 3 + Vite + Tailwind + DaisyUI   |
+| Backend   | Express + TypeScript                 |
+| Database  | SQLite eller PostgreSQL              |
+| Auth      | JWT med roller (admin/user)          |
+| Sikkerhed | bcrypt, rate limiting, HTML-sanitering |
 
+---
 
 ## Krav
 
@@ -24,7 +27,7 @@ Et fullstack-projekt med en **Vue 3**-klient og en **Express**-server.
 
 ## Opsætning og kørsel
 
-### 1. Server (Express – port 3000)
+### 1. Server (Express — port 3000)
 
 ```bash
 cd server
@@ -32,11 +35,7 @@ npm install
 npm run dev
 ```
 
-Serveren starter på `http://localhost:3000`.
-
-### 2. Klient (Vue 3 / Vite – port 5173)
-
-Åbn en ny terminal:
+### 2. Klient (Vue 3 / Vite — port 5173)
 
 ```bash
 cd client
@@ -44,44 +43,71 @@ npm install
 npm run dev
 ```
 
-Klienten starter på `http://localhost:5173`.
+Åbn `http://localhost:5173` i browseren.
+
+### Test-bruger
+
+| Email          | Password      |
+|----------------|---------------|
+| user@test.dk   | password123   |
 
 ---
 
-(Bemærk: .env-filen er inkluderet i projektet udelukkende til undervisningsbrug. Den indeholder ingen følsomme eller produktionskritiske oplysninger.)
+## Backlog
 
-## Test af projektet
+### Dag 1 — Fundament & Auth (~7.5t)
 
-1. Start **serveren** i én terminal (`cd server && npm run dev`)
-2. Start **klienten** i en anden terminal (`cd client && npm run dev`)
-3. Åbn browseren på `http://localhost:5173`
-4. Opret en bruger via **Register**-siden
-5. Log ind via **Login**-siden
-6. Du lander på **Home**-siden, som bekræfter at auth-flowet virker
+| Type | Opgave | Beskrivelse | Tid |
+|------|--------|-------------|-----|
+| AUTH | Projektopsætning | Turborepo/monorepo, Vue Vite frontend, Express backend, mappestruktur | 1t |
+| DATA | Database schema | Tabeller: users, roles, quizzes, sessions, logs — SQLite eller PostgreSQL | 1t |
+| SEC  | Brugerregistrering med stærkt password | bcrypt hash+salt, passwordvalidering (min 8 tegn, tal, special), gem sikkert | 1.5t |
+| AUTH | Login + session / JWT | JWT med rolle (admin/user) i payload, beskyttede routes via middleware | 1.5t |
+| UI   | Login & registrering UI | Vue-formularer med validering, redirect baseret på rolle efter login | 1.5t |
+| API  | Rollebaseret routing | Vue Router guards: /admin/* kun for admins, /quiz/* kun for brugere (og admins) | 1t |
 
-Du kan også teste API'et direkte:
+### Dag 2 — Quiz-motor & Admin (~10t)
 
-```bash
-# Tjek at serveren kører
-curl http://localhost:3000
+| Type | Opgave | Beskrivelse | Tid |
+|------|--------|-------------|-----|
+| DATA | XML-parser til quizfiler | Parser Operatorer.xml, understøtter multiple-choice (en/flere svar) + cloze | 2t |
+| SEC  | Sanitering af quiz-HTML | Kun `<strong>`, `<br>`, `<span>` + italic/underline tilladt — fjern `<script>` og al anden HTML | 1t |
+| API  | Quiz-session API | Server sender ét spørgsmål ad gangen (shufflet), korrekte svar aldrig til client før svar er afgivet | 2t |
+| API  | Pointberegning backend | Fuld point, delvise point (færre rigtige), fradrag ved forkerte svar — logik på server | 1.5t |
+| UI   | Quiz-spiller UI | Ét spørgsmål ad gangen, progress-indikator, radio/checkbox, submit → feedback → næste | 2t |
+| UI   | Admin: upload & slet quizfiler | Filupload til server, liste over uploadede quizzer, slet-funktion | 1.5t |
 
-# Registrer en bruger
-curl -X POST http://localhost:3000/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"username": "testuser", "password": "password123"}'
+### Dag 3 — Statistik, Log & Quizindhold (~8-9t)
 
-# Log ind
-curl -X POST http://localhost:3000/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username": "testuser", "password": "password123"}'
-```
+| Type | Opgave | Beskrivelse | Tid |
+|------|--------|-------------|-----|
+| API  | Aktivitetslog | Log: hvem, hvilken quiz, hvornår, varighed, resultat — admin kan se alle brugeres log | 1.5t |
+| UI   | Admin: brugeroversigt & log UI | Tabel med alle brugere og deres quiz-historik + resultater | 1.5t |
+| UI   | Bruger: resultater & historik | Nuværende og tidligere resultater, quizresultat-opsummering med alle spørgsmål/svar | 1.5t |
+| DATA | Datastruktur-quiz (10+ spørgsmål) | Arrays, linked lists, stacks, queues, trees, hash maps — XML/JSON-format, mix af typer | 2t |
+| UI   | Quiz-afslutning & statistik UI | Samlet score, procentvis resultat, gennemgang af alle spørgsmål og svar | 1t |
+| API  | Shuffle-logik + tilfældig rækkefølge *(nice to have)* | Fisher-Yates shuffle på spørgsmål og svarmuligheder server-side per session | 0.5t |
+| AUTH | Hold-system *(bonus)* | Opret hold, tildel brugere og quizzer til hold — admin UI | 2-3t |
 
 ---
 
 ## Projektstruktur
 
 ```
-s2-project-a/
-├── client/   # Vue 3 + Vite + Tailwind + DaisyUI
-└── server/   # Express + TypeScript
+project-2/
+├── client/          # Vue 3 + Vite + Tailwind + DaisyUI
+│   └── src/
+│       ├── views/   # Login, Register, Home, Quiz, Admin
+│       ├── router/  # Rollebaserede route guards
+│       └── api.ts   # API-klient & auth state
+├── server/          # Express + TypeScript
+│   └── src/
+│       ├── routes/  # auth, quiz, admin endpoints
+│       ├── db/      # Database-lag
+│       └── middleware/  # Auth, rate limiting
+└── README.md
 ```
+
+---
+
+(Bemærk: .env-filen er inkluderet udelukkende til undervisningsbrug. Den indeholder ingen følsomme oplysninger.)
