@@ -1,0 +1,23 @@
+[
+  {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "email": "admin@quiz.dk",
+    "passwordHash": "$2b$10$mZMEFNfwKVtEo35rG7y9sezbKy7NwJSm35oGo4wEJfeUP0wnaMz/.",
+    "role": "admin",
+    "createdAt": "2026-04-07T00:00:00.000Z"
+  },
+  {
+    "id": "00000000-0000-0000-0000-000000000002",
+    "email": "user@quiz.dk",
+    "passwordHash": "$2b$10$3YO6Qi7ydZOtjdhk5j4X1OWQCse9nd.CrM2JRS.GTr9Q3zNeD0m.u",
+    "role": "user",
+    "createdAt": "2026-04-07T00:00:00.000Z"
+  },
+  {
+    "id": "d9a6146c-34bc-4c9b-9da5-53de37b79a30",
+    "email": "test@test.dk",
+    "passwordHash": "$2b$10$ePdOeqgfUA2akkwtLxS04eArozfvVQU3EVJnijCk2m7q1ADCJI1kS",
+    "role": "user",
+    "createdAt": "2026-04-07T11:49:08.797Z"
+  }
+]
