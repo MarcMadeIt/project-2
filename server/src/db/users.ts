@@ -1,21 +1,31 @@
-import bcrypt from "bcryptjs";
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import * as bcrypt from "bcryptjs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { join } from "path";
-
+import { randomUUID } from "crypto";
+/*
+  We define the roles that can exist in the system.
+*/
+export type UserRole = "admin" | "user";
 export interface User {
   id: string;
   email: string;
   passwordHash: string;
+  role: UserRole;
   createdAt: string;
 }
 
-const DATA_FILE = join(process.cwd(), "data", "users.json");
+/*
+  This is where users are stored.
+  IMPORTANT:
+  Your project currently has server/schema/users.json,
+  so this path should match that.
+*/
+const DATA_FILE = join(process.cwd(), "schema", "users.json");
 
 function ensureDataDir() {
-  const dir = join(process.cwd(), "data");
+  const dir = join(process.cwd(), "schema");
   if (!existsSync(dir)) {
-    const fs = require("fs");
-    fs.mkdirSync(dir, { recursive: true });
+    mkdirSync(dir, { recursive: true });
   }
 }
 
@@ -54,25 +64,36 @@ export async function createUser(
   password: string,
 ): Promise<{ user: PublicUser | null; error?: string }> {
   const normalised = email.trim().toLowerCase();
+
   if (!normalised || !password || password.length < 8) {
     return {
       user: null,
       error: "Email og password er påkrævet (password min. 8 tegn).",
     };
   }
+
   if (findByEmail(normalised)) {
     return { user: null, error: "En bruger med denne email findes allerede." };
   }
+
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+
+  /*
+    New users automatically get role "user".
+    Admins can later be created manually or through a separate admin flow.
+  */
   const user: User = {
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     email: normalised,
     passwordHash,
+    role: "user",
     createdAt: new Date().toISOString(),
   };
+
   const users = loadUsers();
   users.push(user);
   saveUsers(users);
+
   const { passwordHash: _, ...publicUser } = user;
   return { user: publicUser };
 }
@@ -83,15 +104,20 @@ export async function verifyLogin(
 ): Promise<{ user: PublicUser | null; token?: string; error?: string }> {
   const normalised = email.trim().toLowerCase();
   const user = findByEmail(normalised);
+
   if (!user) {
     return { user: null, error: "Ugyldig email eller password." };
   }
+
   const ok = await bcrypt.compare(password, user.passwordHash);
+
   if (!ok) {
     return { user: null, error: "Ugyldig email eller password." };
   }
-  const token = crypto.randomUUID();
+
+  const token = randomUUID();
   setToken(token, user.id);
+
   const { passwordHash: _, ...publicUser } = user;
   return { user: publicUser, token };
 }
