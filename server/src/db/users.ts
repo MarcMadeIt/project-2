@@ -89,10 +89,19 @@ export async function createUser(
 ): Promise<{ user: PublicUser | null; error?: string }> {
   const normalised = email.trim().toLowerCase();
 
-  if (!normalised || !password || password.length < 8) {
+  if (!normalised || !password) {
     return {
       user: null,
-      error: "Email og password er påkrævet (password min. 8 tegn).",
+      error: "Email og password er påkrævet.",
+    };
+  }
+
+  const passwordError = validateStrongPassword(password);
+
+  if (passwordError) {
+    return {
+      user: null,
+      error: passwordError,
     };
   }
 
