@@ -47,6 +47,30 @@ function saveUsers(users: User[]) {
 
 const SALT_ROUNDS = 10;
 
+function validateStrongPassword(password: string): string | null {
+  if (password.length < 8) {
+    return "Password skal være mindst 8 tegn.";
+  }
+
+  if (!/[a-z]/.test(password)) {
+    return "Password skal indeholde små bogstaver.";
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    return "Password skal indeholde store bogstaver.";
+  }
+
+  if (!/\d/.test(password)) {
+    return "Password skal indeholde tal.";
+  }
+
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    return "Password skal indeholde specialtegn.";
+  }
+
+  return null;
+}
+
 export function findByEmail(email: string): User | undefined {
   const users = loadUsers();
   const normalised = email.trim().toLowerCase();
