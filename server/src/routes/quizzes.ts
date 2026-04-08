@@ -795,4 +795,80 @@ router.post(
   },
 );
 
+/**
+ * @openapi
+ * /quizzes/{id}:
+ *   delete:
+ *     summary: Delete a quiz
+ *     description: Deletes a quiz from quizzes.json. Admin only.
+ *     tags:
+ *       - Quizzes
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: algoritmer
+ *     responses:
+ *       200:
+ *         description: Quiz deleted successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Quiz slettet."
+ *               deletedQuiz:
+ *                 id: "algoritmer"
+ *                 title: "Algoritmer"
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - admin only
+ *       404:
+ *         description: Quiz not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Quiz blev ikke fundet."
+ *       500:
+ *         description: Server error
+ */
+router.delete(
+  "/:id",
+  requireAuth,
+  requireAdmin,
+  (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const data = loadQuizzes();
+      const quizIndex = data.quizzes.findIndex((quiz) => quiz.id === req.params.id);
+
+      if (quizIndex === -1) {
+        return res.status(404).json({
+          error: "Quiz blev ikke fundet.",
+        });
+      }
+
+      const deletedQuiz = data.quizzes[quizIndex];
+
+      data.quizzes.splice(quizIndex, 1);
+      saveQuizzes(data);
+
+      return res.status(200).json({
+        message: "Quiz slettet.",
+        deletedQuiz: {
+          id: deletedQuiz.id,
+          title: deletedQuiz.title,
+        },
+      });
+    } catch (error) {
+      console.error("Could not delete quiz:", error);
+      return res.status(500).json({
+        error: "Kunne ikke slette quizzen.",
+      });
+    }
+  },
+);
+
 export default router;
