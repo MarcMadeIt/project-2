@@ -81,7 +81,10 @@ function onLogout() {
         </router-link>
 
         <!-- Always shown: Results -->
-        <div class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow">
+        <router-link
+          :to="{ name: 'results' }"
+          class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow"
+        >
           <div class="card-body">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center">
@@ -93,7 +96,7 @@ function onLogout() {
               </div>
             </div>
           </div>
-        </div>
+        </router-link>
 
         <!-- Admin only cards -->
         <template v-if="user?.role === 'admin'">

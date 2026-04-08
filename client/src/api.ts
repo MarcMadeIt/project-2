@@ -115,6 +115,67 @@ export async function register(email: string, password: string) {
   return user
 }
 
+export interface ResultSummary {
+  id: string
+  quizId: string
+  quizTitle: string
+  totalPoints: number
+  maxPoints: number
+  percentage: number
+  submittedAt: string
+}
+
+export interface ResultAnswer {
+  questionId: string
+  userAnswer: string[] | string
+  correct: boolean
+  points: number
+  maxPoints: number
+  correctAnswer: { id: string; text: string }[] | string[]
+}
+
+export interface ResultDetail {
+  id: string
+  userId: string
+  quizId: string
+  quizTitle: string
+  totalPoints: number
+  maxPoints: number
+  percentage: number
+  submittedAt: string
+  answers: ResultAnswer[]
+}
+
+export async function getMyResults(): Promise<ResultSummary[]> {
+  const res = await fetch(`${API_BASE}/results`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  })
+
+  const data = await res.json().catch(() => ({}))
+
+  if (!res.ok) {
+    throw new Error(data?.error ?? 'Kunne ikke hente resultater')
+  }
+
+  return data.results
+}
+
+export async function getResultById(resultId: string): Promise<ResultDetail> {
+  const res = await fetch(`${API_BASE}/results/${resultId}`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  })
+
+  const data = await res.json().catch(() => ({}))
+
+  if (!res.ok) {
+    throw new Error(data?.error ?? 'Kunne ikke hente resultat')
+  }
+
+  return data
+}
+
 export function logout() {
   setAuth(null, null)
 }
