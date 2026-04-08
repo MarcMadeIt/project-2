@@ -16,6 +16,13 @@ const options: swaggerJsdoc.Options = {
       },
     ],
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "UUID",
+        },
+      },
       schemas: {
         QuizListItem: {
           type: "object",

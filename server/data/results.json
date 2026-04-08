@@ -1,0 +1,384 @@
+{
+  "results": [
+    {
+      "id": "7a9f8e03-9ea6-4b54-94c2-2c3728b6e1ed",
+      "userId": "00000000-0000-0000-0000-000000000002",
+      "quizId": "quiz_datastructures_001",
+      "quizTitle": "Datastrukturer",
+      "totalPoints": 0,
+      "maxPoints": 12,
+      "percentage": 0,
+      "submittedAt": "2026-04-08T07:23:57.406Z",
+      "answers": [
+        {
+          "questionId": "ds_q01",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "b",
+              "text": "Queue"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q02",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "c",
+              "text": "Stack"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q03",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "Elementer ligger typisk samlet i hukommelsen."
+            },
+            {
+              "id": "b",
+              "text": "Adgang via indeks er normalt hurtig."
+            },
+            {
+              "id": "d",
+              "text": "Et array har ofte fast størrelse."
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q04",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "b",
+              "text": "Indsættelse og sletning kan være nemmere, når man har reference til den rigtige position."
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q05",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "b",
+              "text": "Stack"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q06",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "Binary tree"
+            },
+            {
+              "id": "b",
+              "text": "Graph"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q07",
+          "userAnswer": "",
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            "hash table",
+            "hashtable",
+            "map",
+            "dictionary"
+          ]
+        },
+        {
+          "questionId": "ds_q08",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "O(1)"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q09",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "Venstre barn er mindre end noden, og højre barn er større end noden."
+            },
+            {
+              "id": "c",
+              "text": "Søgning kan være effektiv, hvis træet er balanceret."
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q10",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "Queue"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q11",
+          "userAnswer": "",
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            "lifo",
+            "last in first out"
+          ]
+        },
+        {
+          "questionId": "ds_q12",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "push"
+            },
+            {
+              "id": "b",
+              "text": "pop"
+            },
+            {
+              "id": "d",
+              "text": "peek"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "d869270a-9856-4b80-a870-2ccb0db2173a",
+      "userId": "00000000-0000-0000-0000-000000000002",
+      "quizId": "quiz_datastructures_001",
+      "quizTitle": "Datastrukturer",
+      "totalPoints": 0,
+      "maxPoints": 12,
+      "percentage": 0,
+      "submittedAt": "2026-04-08T07:25:07.731Z",
+      "answers": [
+        {
+          "questionId": "ds_q01",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "b",
+              "text": "Queue"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q02",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "c",
+              "text": "Stack"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q03",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "Elementer ligger typisk samlet i hukommelsen."
+            },
+            {
+              "id": "b",
+              "text": "Adgang via indeks er normalt hurtig."
+            },
+            {
+              "id": "d",
+              "text": "Et array har ofte fast størrelse."
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q04",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "b",
+              "text": "Indsættelse og sletning kan være nemmere, når man har reference til den rigtige position."
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q05",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "b",
+              "text": "Stack"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q06",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "Binary tree"
+            },
+            {
+              "id": "b",
+              "text": "Graph"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q07",
+          "userAnswer": "",
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            "hash table",
+            "hashtable",
+            "map",
+            "dictionary"
+          ]
+        },
+        {
+          "questionId": "ds_q08",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "O(1)"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q09",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "Venstre barn er mindre end noden, og højre barn er større end noden."
+            },
+            {
+              "id": "c",
+              "text": "Søgning kan være effektiv, hvis træet er balanceret."
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q10",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "Queue"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q11",
+          "userAnswer": "",
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            "lifo",
+            "last in first out"
+          ]
+        },
+        {
+          "questionId": "ds_q12",
+          "userAnswer": [],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "push"
+            },
+            {
+              "id": "b",
+              "text": "pop"
+            },
+            {
+              "id": "d",
+              "text": "peek"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

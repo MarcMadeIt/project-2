@@ -2,6 +2,15 @@ import { computed, ref } from 'vue'
 
 export const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 
+export function getAuthHeaders() {
+  const token = localStorage.getItem("auth_token");
+
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
 export interface User {
   id: string
   email: string

@@ -62,3 +62,28 @@ export type Question =
   | SingleChoiceQuestion
   | MultipleChoiceQuestion
   | ClozeQuestion;
+
+  export interface StoredAnswerResult {
+  questionId: string;
+  userAnswer: string[] | string;
+  correct: boolean;
+  points: number;
+  maxPoints: number;
+  correctAnswer: { id: string; text: string }[] | string[];
+}
+
+export interface StoredQuizResult {
+  id: string;
+  userId: string;
+  quizId: string;
+  quizTitle: string;
+  totalPoints: number;
+  maxPoints: number;
+  percentage: number;
+  submittedAt: string;
+  answers: StoredAnswerResult[];
+}
+
+export interface ResultsFile {
+  results: StoredQuizResult[];
+}

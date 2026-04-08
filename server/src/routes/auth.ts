@@ -5,10 +5,35 @@ import { loginLimiter } from "../middleware/rateLimit";
 const router = Router();
 
 /**
- * POST /auth/login
- * Body: { email, password }
- * Returns: { user, token }
+ * @openapi
+ * /auth/login:
+ *   post:
+ *     summary: Log in a user
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: test@test.dk
+ *               password:
+ *                 type: string
+ *                 example: Stoljenaskamarat1!
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       401:
+ *         description: Invalid credentials
  */
+// Bruges i frontend login-request.
 router.post("/login", loginLimiter, async (req: Request, res: Response) => {
   const { email, password } = req.body ?? {};
   if (!email || !password) {

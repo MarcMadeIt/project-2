@@ -1,17 +1,16 @@
+import crypto from "crypto";
 import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
-import { QuizFile, Question } from "../types/quiz";
+import { QuizFile, Question, ResultsFile, StoredQuizResult } from "../types/quiz";
+import { requireAuth, AuthenticatedRequest } from "../middleware/auth";
 
 const router = Router();
+router.use(requireAuth);
 
-const quizzesFilePath = path.join(
-  __dirname,
-  "..",
-  "..",
-  "data",
-  "quizzes.json",
-);
+const quizzesFilePath = path.join(__dirname, "..", "..", "data", "quizzes.json");
+
+const resultsFilePath = path.join(__dirname, "..", "..", "data", "results.json");
 
 type PublicQuestion =
   | {
@@ -63,6 +62,8 @@ function toPublicQuestion(question: Question): PublicQuestion {
  *     description: Returns a list of all quizzes with title and link.
  *     tags:
  *       - Quizzes
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: A list of quizzes
@@ -77,7 +78,7 @@ function toPublicQuestion(question: Question): PublicQuestion {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get("/", (_req: Request, res: Response) => {
+router.get("/", (_req: AuthenticatedRequest, res: Response) => {
   try {
     const data = loadQuizzes();
 
@@ -102,6 +103,8 @@ router.get("/", (_req: Request, res: Response) => {
  *     description: Returns quiz metadata and question data, but never the correct answers.
  *     tags:
  *       - Quizzes
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -218,6 +221,8 @@ function scoreMultipleChoice(
  *     description: Validates submitted answers, calculates points, and returns correct answers for wrong responses.
  *     tags:
  *       - Quizzes
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -253,7 +258,7 @@ function scoreMultipleChoice(
  *       500:
  *         description: Server error
  */
-router.post("/:id/validate", (req: Request, res: Response) => {
+router.post("/:id/validate", (req: AuthenticatedRequest, res: Response) => {
   try {
     const data = loadQuizzes();
     const quiz = data.quizzes.find((q) => q.id === req.params.id);
@@ -268,6 +273,10 @@ router.post("/:id/validate", (req: Request, res: Response) => {
       return res
         .status(400)
         .json({ error: "Body skal indeholde et answers-array." });
+    }
+
+    if (!req.user) {
+      return res.status(401).json({ error: "Bruger ikke autentificeret." });
     }
 
     const submittedAnswersMap = new Map(
@@ -298,7 +307,7 @@ router.post("/:id/validate", (req: Request, res: Response) => {
           points,
           maxPoints: 1,
           userAnswer,
-          correctAnswer: question.correctAnswers,
+          correctAnswer: getCorrectAnswerWithText(question),
         };
       }
 
@@ -318,7 +327,7 @@ router.post("/:id/validate", (req: Request, res: Response) => {
           points,
           maxPoints: 1,
           userAnswer,
-          correctAnswer: question.correctAnswers,
+          correctAnswer: getCorrectAnswerWithText(question),
         };
       }
 
@@ -352,9 +361,12 @@ router.post("/:id/validate", (req: Request, res: Response) => {
         points,
         maxPoints: 1,
         userAnswer,
-        correctAnswer: question.acceptedAnswers,
+        correctAnswer: getCorrectAnswerWithText(question),
       };
     });
+
+    const percentage =
+      maxPoints > 0 ? Number(((totalPoints / maxPoints) * 100).toFixed(2)) : 0;
 
     const wrongAnswers = results
       .filter((result) => !result.correct)
@@ -365,6 +377,29 @@ router.post("/:id/validate", (req: Request, res: Response) => {
         points: result.points,
         maxPoints: result.maxPoints,
       }));
+
+    const storedResult: StoredQuizResult = {
+      id: crypto.randomUUID(),
+      userId: req.user.id,
+      quizId: quiz.id,
+      quizTitle: quiz.title,
+      totalPoints,
+      maxPoints,
+      percentage,
+      submittedAt: new Date().toISOString(),
+      answers: results.map((result) => ({
+        questionId: result.questionId,
+        userAnswer: result.userAnswer,
+        correct: result.correct,
+        points: result.points,
+        maxPoints: result.maxPoints,
+        correctAnswer: result.correctAnswer,
+      })),
+    };
+
+    const resultsFile = loadResults();
+    resultsFile.results.push(storedResult);
+    saveResults(resultsFile);
 
     return res.json({
       quizId: quiz.id,
@@ -383,5 +418,29 @@ router.post("/:id/validate", (req: Request, res: Response) => {
     return res.status(500).json({ error: "Kunne ikke validere quizzen." });
   }
 });
+
+function loadResults(): ResultsFile {
+  const raw = fs.readFileSync(resultsFilePath, "utf-8");
+  return JSON.parse(raw) as ResultsFile;
+}
+
+function saveResults(data: ResultsFile): void {
+  fs.writeFileSync(resultsFilePath, JSON.stringify(data, null, 2), "utf-8");
+}
+
+function getCorrectAnswerWithText(question: Question): { id: string; text: string }[] | string[] {
+  if (question.type === "single_choice" || question.type === "multiple_choice") {
+    return question.correctAnswers.map((correctId) => {
+      const option = question.options.find((opt) => opt.id === correctId);
+
+      return {
+        id: correctId,
+        text: option ? option.text : "",
+      };
+    });
+  }
+
+  return question.acceptedAnswers;
+}
 
 export default router;

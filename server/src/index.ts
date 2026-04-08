@@ -5,6 +5,7 @@ import { generalLimiter } from "./middleware/rateLimit";
 import authRoutes from "./routes/auth";
 import quizRoutes from "./routes/quizzes";
 import { swaggerSpec } from "./config/swagger";
+import resultsRoutes from "./routes/results";
 
 const app = express();
 const port = 3000;
@@ -26,6 +27,7 @@ app.get("/", (_req, res) => {
 
 app.use("/auth", authRoutes);
 app.use("/quizzes", quizRoutes);
+app.use("/results", resultsRoutes);
 
 // Swagger docs
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

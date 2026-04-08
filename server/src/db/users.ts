@@ -17,7 +17,7 @@ export interface User {
 /*
   This is where users are stored.
   IMPORTANT:
-  Your project currently has server/schema/users.json,
+  Your project currently has server/data/users.json,
   so this path should match that.
 */
 const DATA_FILE = join(process.cwd(), "data", "users.json");
@@ -163,4 +163,20 @@ export function setToken(token: string, userId: string) {
 
 export function getUserIdFromToken(token: string): string | undefined {
   return tokenToUserId.get(token);
+}
+
+export function getUserByToken(token: string) {
+  const userId = tokenToUserId.get(token);
+  if (!userId) return null;
+
+  const users = loadUsers();
+  const user = users.find((u) => u.id === userId);
+
+  if (!user) return null;
+
+  return {
+    id: user.id,
+    email: user.email,
+    createdAt: user.createdAt,
+  };
 }
