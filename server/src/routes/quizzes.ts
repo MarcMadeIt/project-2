@@ -1,11 +1,17 @@
 import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
-import { QuizFile, Quiz, Question } from "../types/quiz";
+import { QuizFile, Question } from "../types/quiz";
 
 const router = Router();
 
-const quizzesFilePath = path.join(__dirname, "..", "..", "data", "quizzes.json");
+const quizzesFilePath = path.join(
+  __dirname,
+  "..",
+  "..",
+  "data",
+  "quizzes.json",
+);
 
 type PublicQuestion =
   | {
@@ -28,7 +34,10 @@ function loadQuizzes(): QuizFile {
 }
 
 function toPublicQuestion(question: Question): PublicQuestion {
-  if (question.type === "single_choice" || question.type === "multiple_choice") {
+  if (
+    question.type === "single_choice" ||
+    question.type === "multiple_choice"
+  ) {
     return {
       id: question.id,
       type: question.type,
@@ -158,7 +167,11 @@ interface ValidateQuizRequest {
   }[];
 }
 
-function normalizeString(value: string, trimWhitespace: boolean, caseSensitive: boolean): string {
+function normalizeString(
+  value: string,
+  trimWhitespace: boolean,
+  caseSensitive: boolean,
+): string {
   let result = value;
 
   if (trimWhitespace) {
@@ -181,7 +194,10 @@ function arraysEqual(a: string[], b: string[]): boolean {
   return sortedA.every((value, index) => value === sortedB[index]);
 }
 
-function scoreMultipleChoice(userAnswers: string[], correctAnswers: string[]): number {
+function scoreMultipleChoice(
+  userAnswers: string[],
+  correctAnswers: string[],
+): number {
   const correctSet = new Set(correctAnswers);
   const userSet = new Set(userAnswers);
 
@@ -249,7 +265,9 @@ router.post("/:id/validate", (req: Request, res: Response) => {
     const body = req.body as ValidateQuizRequest;
 
     if (!body.answers || !Array.isArray(body.answers)) {
-      return res.status(400).json({ error: "Body skal indeholde et answers-array." });
+      return res
+        .status(400)
+        .json({ error: "Body skal indeholde et answers-array." });
     }
 
     const submittedAnswersMap = new Map(
@@ -265,7 +283,9 @@ router.post("/:id/validate", (req: Request, res: Response) => {
       const submittedAnswer = submittedAnswersMap.get(question.id);
 
       if (question.type === "single_choice") {
-        const userAnswer = Array.isArray(submittedAnswer) ? submittedAnswer : [];
+        const userAnswer = Array.isArray(submittedAnswer)
+          ? submittedAnswer
+          : [];
         const correct = arraysEqual(userAnswer, question.correctAnswers);
         const points = correct ? 1 : 0;
 
@@ -283,7 +303,9 @@ router.post("/:id/validate", (req: Request, res: Response) => {
       }
 
       if (question.type === "multiple_choice") {
-        const userAnswer = Array.isArray(submittedAnswer) ? submittedAnswer : [];
+        const userAnswer = Array.isArray(submittedAnswer)
+          ? submittedAnswer
+          : [];
         const points = scoreMultipleChoice(userAnswer, question.correctAnswers);
         const correct = points === 1;
 
@@ -300,7 +322,8 @@ router.post("/:id/validate", (req: Request, res: Response) => {
         };
       }
 
-      const userAnswer = typeof submittedAnswer === "string" ? submittedAnswer : "";
+      const userAnswer =
+        typeof submittedAnswer === "string" ? submittedAnswer : "";
 
       const normalizedUser = normalizeString(
         userAnswer,
@@ -308,8 +331,13 @@ router.post("/:id/validate", (req: Request, res: Response) => {
         question.caseSensitive,
       );
 
-      const normalizedAcceptedAnswers = question.acceptedAnswers.map((accepted) =>
-        normalizeString(accepted, question.trimWhitespace, question.caseSensitive),
+      const normalizedAcceptedAnswers = question.acceptedAnswers.map(
+        (accepted) =>
+          normalizeString(
+            accepted,
+            question.trimWhitespace,
+            question.caseSensitive,
+          ),
       );
 
       const correct = normalizedAcceptedAnswers.includes(normalizedUser);
@@ -343,7 +371,10 @@ router.post("/:id/validate", (req: Request, res: Response) => {
       title: quiz.title,
       totalPoints,
       maxPoints,
-      percentage: maxPoints > 0 ? Number(((totalPoints / maxPoints) * 100).toFixed(2)) : 0,
+      percentage:
+        maxPoints > 0
+          ? Number(((totalPoints / maxPoints) * 100).toFixed(2))
+          : 0,
       results,
       wrongAnswers,
     });

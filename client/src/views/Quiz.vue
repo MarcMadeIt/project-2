@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { API_BASE, getStoredToken } from '@/api'
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 const route = useRoute()
@@ -69,8 +70,16 @@ const totalQuestions = computed(() => quiz.value?.questions.length ?? 0)
 const isFirst = computed(() => currentIndex.value === 0)
 const isLast = computed(() => currentIndex.value === totalQuestions.value - 1)
 const progress = computed(() =>
-  totalQuestions.value > 0 ? ((currentIndex.value + 1) / totalQuestions.value) * 100 : 0
+  totalQuestions.value > 0 ? ((currentIndex.value + 1) / totalQuestions.value) * 100 : 0,
 )
+
+const currentAnswered = computed(() => {
+  if (!currentQuestion.value) return false
+  const a = answers.value.get(currentQuestion.value.id)
+  if (!a) return false
+  if (Array.isArray(a)) return a.length > 0
+  return a.trim().length > 0
+})
 
 const allAnswered = computed(() => {
   if (!quiz.value) return false
@@ -110,7 +119,11 @@ function getClozeAnswer(questionId: string): string {
   return ''
 }
 
-function toggleOption(questionId: string, optionId: string, type: 'single_choice' | 'multiple_choice') {
+function toggleOption(
+  questionId: string,
+  optionId: string,
+  type: 'single_choice' | 'multiple_choice',
+) {
   const updated = new Map(answers.value)
 
   if (type === 'single_choice') {
@@ -118,7 +131,10 @@ function toggleOption(questionId: string, optionId: string, type: 'single_choice
   } else {
     const current = getSelectedOptions(questionId)
     if (current.includes(optionId)) {
-      updated.set(questionId, current.filter((id) => id !== optionId))
+      updated.set(
+        questionId,
+        current.filter((id) => id !== optionId),
+      )
     } else {
       updated.set(questionId, [...current, optionId])
     }
@@ -182,14 +198,12 @@ onMounted(fetchQuiz)
 </script>
 
 <template>
-  <div class="min-h-screen bg-base-200">
+  <div>
     <!-- Navbar -->
-    <header class="navbar bg-base-100 shadow-sm px-4 lg:px-8">
+    <header class="navbar bg-base-100 shadow-sm p-6">
       <div class="flex-1 gap-2">
         <button class="btn btn-ghost btn-sm gap-2" @click="router.push({ name: 'home' })">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
+          <ChevronLeftIcon class="w-4 h-4" />
           Tilbage
         </button>
       </div>
@@ -198,7 +212,7 @@ onMounted(fetchQuiz)
       </div>
     </header>
 
-    <main class="max-w-2xl mx-auto p-4 lg:p-8">
+    <main class="py-6">
       <!-- Loading -->
       <div v-if="loading" class="flex justify-center py-20">
         <span class="loading loading-spinner loading-lg text-primary"></span>
@@ -214,9 +228,7 @@ onMounted(fetchQuiz)
         <div class="card bg-base-100 shadow-sm mb-6">
           <div class="card-body text-center">
             <h2 class="text-2xl font-bold mb-2">Resultat</h2>
-            <div class="text-5xl font-bold text-primary mb-1">
-              {{ result.percentage }}%
-            </div>
+            <div class="text-5xl font-bold text-primary mb-1">{{ result.percentage }}%</div>
             <p class="text-base-content/60 mb-4">
               {{ result.totalPoints.toFixed(1) }} ud af {{ result.maxPoints }} point
             </p>
@@ -224,14 +236,22 @@ onMounted(fetchQuiz)
             <div class="w-full bg-base-200 rounded-full h-3 mb-6">
               <div
                 class="h-3 rounded-full transition-all"
-                :class="result.percentage >= 70 ? 'bg-success' : result.percentage >= 40 ? 'bg-warning' : 'bg-error'"
+                :class="
+                  result.percentage >= 70
+                    ? 'bg-success'
+                    : result.percentage >= 40
+                      ? 'bg-warning'
+                      : 'bg-error'
+                "
                 :style="{ width: result.percentage + '%' }"
               ></div>
             </div>
 
             <div class="flex gap-3 justify-center">
               <button class="btn btn-primary" @click="restart">Prøv igen</button>
-              <button class="btn btn-ghost" @click="router.push({ name: 'home' })">Tilbage til forsiden</button>
+              <button class="btn btn-ghost" @click="router.push({ name: 'home' })">
+                Tilbage til forsiden
+              </button>
             </div>
           </div>
         </div>
@@ -252,24 +272,29 @@ onMounted(fetchQuiz)
                   {{ r.correct ? '✓' : '✗' }}
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="text-sm font-medium mb-1">
-                    Spørgsmål {{ i + 1 }}
-                  </p>
-                  <p class="text-sm text-base-content/70" v-html="getQuestionByResult(r)?.questionText"></p>
+                  <p class="text-sm font-medium mb-1">Spørgsmål {{ i + 1 }}</p>
+                  <p
+                    class="text-sm text-base-content/70"
+                    v-html="getQuestionByResult(r)?.questionText"
+                  ></p>
                   <div v-if="!r.correct" class="mt-2 text-xs">
                     <span class="text-error">Dit svar: </span>
                     <span class="text-base-content/60">
                       <template v-if="Array.isArray(r.userAnswer)">
                         <template v-if="r.userAnswer.length === 0">Intet svar</template>
                         <template v-else>
-                          {{ r.userAnswer.map(id => {
-                            const q = getQuestionByResult(r)
-                            if (q && q.type !== 'cloze') {
-                              const opt = q.options.find(o => o.id === id)
-                              return opt ? opt.text : id
-                            }
-                            return id
-                          }).join(', ') }}
+                          {{
+                            r.userAnswer
+                              .map((id) => {
+                                const q = getQuestionByResult(r)
+                                if (q && q.type !== 'cloze') {
+                                  const opt = q.options.find((o) => o.id === id)
+                                  return opt ? opt.text : id
+                                }
+                                return id
+                              })
+                              .join(', ')
+                          }}
                         </template>
                       </template>
                       <template v-else>{{ r.userAnswer || 'Intet svar' }}</template>
@@ -277,14 +302,18 @@ onMounted(fetchQuiz)
                     <br />
                     <span class="text-success">Korrekt: </span>
                     <span class="text-base-content/60">
-                      {{ r.correctAnswer.map(id => {
-                        const q = getQuestionByResult(r)
-                        if (q && q.type !== 'cloze') {
-                          const opt = q.options.find(o => o.id === id)
-                          return opt ? opt.text : id
-                        }
-                        return id
-                      }).join(', ') }}
+                      {{
+                        r.correctAnswer
+                          .map((id) => {
+                            const q = getQuestionByResult(r)
+                            if (q && q.type !== 'cloze') {
+                              const opt = q.options.find((o) => o.id === id)
+                              return opt ? opt.text : id
+                            }
+                            return id
+                          })
+                          .join(', ')
+                      }}
                     </span>
                   </div>
                 </div>
@@ -320,7 +349,11 @@ onMounted(fetchQuiz)
                   v-for="opt in (currentQuestion as ChoiceQuestion).options"
                   :key="opt.id"
                   class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
-                  :class="getSelectedOptions(currentQuestion.id).includes(opt.id) ? 'border-primary bg-primary/5' : 'border-base-300 hover:border-base-content/20'"
+                  :class="
+                    getSelectedOptions(currentQuestion.id).includes(opt.id)
+                      ? 'border-primary bg-primary/5'
+                      : 'border-base-300 hover:border-base-content/20'
+                  "
                 >
                   <input
                     type="radio"
@@ -342,7 +375,11 @@ onMounted(fetchQuiz)
                   v-for="opt in (currentQuestion as ChoiceQuestion).options"
                   :key="opt.id"
                   class="flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
-                  :class="getSelectedOptions(currentQuestion.id).includes(opt.id) ? 'border-primary bg-primary/5' : 'border-base-300 hover:border-base-content/20'"
+                  :class="
+                    getSelectedOptions(currentQuestion.id).includes(opt.id)
+                      ? 'border-primary bg-primary/5'
+                      : 'border-base-300 hover:border-base-content/20'
+                  "
                 >
                   <input
                     type="checkbox"
@@ -362,7 +399,9 @@ onMounted(fetchQuiz)
                 class="input input-bordered w-full"
                 placeholder="Skriv dit svar..."
                 :value="getClozeAnswer(currentQuestion.id)"
-                @input="setClozeAnswer(currentQuestion!.id, ($event.target as HTMLInputElement).value)"
+                @input="
+                  setClozeAnswer(currentQuestion!.id, ($event.target as HTMLInputElement).value)
+                "
               />
             </template>
           </div>
@@ -370,33 +409,21 @@ onMounted(fetchQuiz)
 
         <!-- Navigation -->
         <div class="flex justify-between items-center">
-          <button
-            class="btn btn-ghost"
-            :disabled="isFirst"
-            @click="prev"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
+          <button class="btn btn-ghost" :disabled="isFirst" @click="prev">
+            <ChevronLeftIcon class="w-4 h-4" />
             Forrige
           </button>
 
           <template v-if="isLast">
-            <button
-              class="btn btn-primary"
-              :disabled="!allAnswered || submitting"
-              @click="submit"
-            >
+            <button class="btn btn-primary" :disabled="!allAnswered || submitting" @click="submit">
               <span v-if="submitting" class="loading loading-spinner loading-sm"></span>
               Aflever
             </button>
           </template>
           <template v-else>
-            <button class="btn btn-primary" @click="next">
+            <button class="btn btn-primary" :disabled="!currentAnswered" @click="next">
               Næste
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
+              <ChevronRightIcon class="w-4 h-4" />
             </button>
           </template>
         </div>
@@ -408,7 +435,11 @@ onMounted(fetchQuiz)
             :key="q.id"
             class="w-2.5 h-2.5 rounded-full transition-colors"
             :class="[
-              i === currentIndex ? 'bg-primary' : answers.get(q.id) ? 'bg-primary/30' : 'bg-base-300'
+              i === currentIndex
+                ? 'bg-primary'
+                : answers.get(q.id)
+                  ? 'bg-primary/30'
+                  : 'bg-base-300',
             ]"
             @click="currentIndex = i"
           ></button>
