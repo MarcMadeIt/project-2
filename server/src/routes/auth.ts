@@ -23,10 +23,10 @@ const router = Router();
  *             properties:
  *               email:
  *                 type: string
- *                 example: test@test.dk
+ *                 example: admin@quiz.dk
  *               password:
  *                 type: string
- *                 example: Stoljenaskamarat1!
+ *                 example: Admin123!
  *     responses:
  *       200:
  *         description: Login successful

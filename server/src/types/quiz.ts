@@ -87,3 +87,42 @@ export interface StoredQuizResult {
 export interface ResultsFile {
   results: StoredQuizResult[];
 }
+
+export interface CreateQuizRequest {
+  title: string;
+  description: string;
+  category: string;
+  difficulty: string;
+  questions: CreateQuestionRequest[];
+}
+
+export type CreateQuestionRequest =
+  | CreateSingleChoiceQuestionRequest
+  | CreateMultipleChoiceQuestionRequest
+  | CreateClozeQuestionRequest;
+
+export interface CreateOptionRequest {
+  text: string;
+}
+
+export interface CreateSingleChoiceQuestionRequest {
+  type: "single_choice";
+  questionText: string;
+  options: CreateOptionRequest[];
+  correctAnswers: number[];
+}
+
+export interface CreateMultipleChoiceQuestionRequest {
+  type: "multiple_choice";
+  questionText: string;
+  options: CreateOptionRequest[];
+  correctAnswers: number[];
+}
+
+export interface CreateClozeQuestionRequest {
+  type: "cloze";
+  questionText: string;
+  acceptedAnswers: string[];
+  caseSensitive?: boolean;
+  trimWhitespace?: boolean;
+}

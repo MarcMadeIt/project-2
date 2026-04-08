@@ -2,8 +2,9 @@ import crypto from "crypto";
 import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
-import { QuizFile, Question, ResultsFile, StoredQuizResult } from "../types/quiz";
+import { QuizFile, Question, ResultsFile, StoredQuizResult, Quiz, CreateQuizRequest, Option, CreateQuestionRequest } from "../types/quiz";
 import { requireAuth, AuthenticatedRequest } from "../middleware/auth";
+import { requireAdmin } from "../middleware/admin";
 
 const router = Router();
 router.use(requireAuth);
@@ -11,6 +12,38 @@ router.use(requireAuth);
 const quizzesFilePath = path.join(__dirname, "..", "..", "data", "quizzes.json");
 
 const resultsFilePath = path.join(__dirname, "..", "..", "data", "results.json");
+
+function saveQuizzes(data: QuizFile): void {
+  fs.writeFileSync(quizzesFilePath, JSON.stringify(data, null, 2), "utf-8");
+}
+
+function isValidQuiz(quiz: Quiz): boolean {
+  if (!quiz.id || !quiz.title || !Array.isArray(quiz.questions)) {
+    return false;
+  }
+
+  for (const question of quiz.questions) {
+    if (!question.id || !question.type || !question.questionText) {
+      return false;
+    }
+
+    if (
+      (question.type === "single_choice" || question.type === "multiple_choice") &&
+      (!("options" in question) || !Array.isArray(question.options) || !Array.isArray(question.correctAnswers))
+    ) {
+      return false;
+    }
+
+    if (
+      question.type === "cloze" &&
+      (!("acceptedAnswers" in question) || !Array.isArray(question.acceptedAnswers))
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 type PublicQuestion =
   | {
@@ -468,5 +501,298 @@ function getCorrectAnswerWithText(question: Question): { id: string; text: strin
 
   return question.acceptedAnswers;
 }
+
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+function generateQuizId(title: string, existingIds: string[]): string {
+  const base = slugify(title) || "quiz";
+  let candidate = base;
+  let counter = 1;
+
+  while (existingIds.includes(candidate)) {
+    counter += 1;
+    candidate = `${base}-${counter}`;
+  }
+
+  return candidate;
+}
+
+function generateQuestionId(index: number): string {
+  return `q${index + 1}`;
+}
+
+function generateOptionId(index: number): string {
+  return String.fromCharCode(97 + index);
+}
+
+function validateCreateQuizRequest(body: CreateQuizRequest): string | null {
+  if (!body.title?.trim()) {
+    return "Quiz skal have en title.";
+  }
+
+  if (!body.description?.trim()) {
+    return "Quiz skal have en description.";
+  }
+
+  if (!body.category?.trim()) {
+    return "Quiz skal have en category.";
+  }
+
+  if (!body.difficulty?.trim()) {
+    return "Quiz skal have en difficulty.";
+  }
+
+  if (!Array.isArray(body.questions) || body.questions.length === 0) {
+    return "Quiz skal have mindst ét spørgsmål.";
+  }
+
+  for (const question of body.questions) {
+    if (!question.questionText?.trim()) {
+      return "Alle spørgsmål skal have questionText.";
+    }
+
+    if (question.type === "single_choice" || question.type === "multiple_choice") {
+      if (!Array.isArray(question.options) || question.options.length < 2) {
+        return "Choice-spørgsmål skal have mindst 2 svarmuligheder.";
+      }
+
+      if (question.options.some((option) => !option.text?.trim())) {
+        return "Alle svarmuligheder skal have text.";
+      }
+
+      if (!Array.isArray(question.correctAnswers) || question.correctAnswers.length === 0) {
+        return "Choice-spørgsmål skal have mindst ét korrekt svar.";
+      }
+
+      const maxIndex = question.options.length - 1;
+      const hasInvalidIndex = question.correctAnswers.some(
+        (index) => !Number.isInteger(index) || index < 0 || index > maxIndex,
+      );
+
+      if (hasInvalidIndex) {
+        return "correctAnswers indeholder ugyldige option-indeks.";
+      }
+
+      if (question.type === "single_choice" && question.correctAnswers.length !== 1) {
+        return "single_choice skal have præcis ét korrekt svar.";
+      }
+    }
+
+    if (question.type === "cloze") {
+      if (!Array.isArray(question.acceptedAnswers) || question.acceptedAnswers.length === 0) {
+        return "Cloze-spørgsmål skal have mindst ét acceptedAnswers-svar.";
+      }
+
+      if (question.acceptedAnswers.some((answer) => !answer.trim())) {
+        return "acceptedAnswers må ikke indeholde tomme værdier.";
+      }
+    }
+  }
+
+  return null;
+}
+
+function buildStoredQuestion(question: CreateQuestionRequest, index: number) {
+  const questionId = generateQuestionId(index);
+
+  if (question.type === "single_choice" || question.type === "multiple_choice") {
+    const options: Option[] = question.options.map((option, optionIndex) => ({
+      id: generateOptionId(optionIndex),
+      text: option.text,
+    }));
+
+    const correctAnswers = question.correctAnswers.map(
+      (correctIndex) => options[correctIndex].id,
+    );
+
+    return {
+      id: questionId,
+      type: question.type,
+      questionText: question.questionText,
+      options,
+      correctAnswers,
+    };
+  }
+
+  return {
+    id: questionId,
+    type: "cloze" as const,
+    questionText: question.questionText,
+    acceptedAnswers: question.acceptedAnswers,
+    caseSensitive: question.caseSensitive ?? false,
+    trimWhitespace: question.trimWhitespace ?? true,
+  };
+}
+
+/**
+ * @openapi
+ * /quizzes:
+ *   post:
+ *     summary: Create a new quiz
+ *     description: |
+ *       Creates a new quiz and stores it in quizzes.json.
+ *       Only users with role <strong>admin</strong> can access this endpoint.
+ *       
+ *       The backend automatically generates:
+ *       - quiz id
+ *       - question ids
+ *       - option ids
+ *       - default configuration
+ *       
+ *       For choice questions:
+ *       - correctAnswers uses indexes (0-based) of the options array
+ *     tags:
+ *       - Quizzes
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - description
+ *               - category
+ *               - difficulty
+ *               - questions
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Algoritmer"
+ *               description:
+ *                 type: string
+ *                 example: "Quiz om grundlæggende algoritmer."
+ *               category:
+ *                 type: string
+ *                 example: "Computer Science"
+ *               difficulty:
+ *                 type: string
+ *                 example: "medium"
+ *               questions:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *           example:
+ *             title: "Algoritmer"
+ *             description: "Quiz om grundlæggende algoritmer."
+ *             category: "Computer Science"
+ *             difficulty: "medium"
+ *             questions:
+ *               - type: "single_choice"
+ *                 questionText: "Hvad er worst-case tidskompleksiteten for binary search?"
+ *                 options:
+ *                   - text: "O(n)"
+ *                   - text: "O(log n)"
+ *                   - text: "O(n log n)"
+ *                   - text: "O(1)"
+ *                 correctAnswers: [1]
+ *               - type: "multiple_choice"
+ *                 questionText: "Hvilke af følgende er sorteringsalgoritmer?"
+ *                 options:
+ *                   - text: "Merge sort"
+ *                   - text: "Binary search"
+ *                   - text: "Quick sort"
+ *                   - text: "Bubble sort"
+ *                 correctAnswers: [0, 2, 3]
+ *               - type: "cloze"
+ *                 questionText: "En algoritme der deler problemet i mindre dele kaldes ofte <strong>____</strong>."
+ *                 acceptedAnswers:
+ *                   - "divide and conquer"
+ *                   - "divide-and-conquer"
+ *     responses:
+ *       201:
+ *         description: Quiz created successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Quiz oprettet."
+ *               quiz:
+ *                 id: "algoritmer"
+ *                 title: "Algoritmer"
+ *                 link: "/quizzes/algoritmer"
+ *       400:
+ *         description: Invalid request data
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Quiz-format er ugyldigt."
+ *       401:
+ *         description: Unauthorized (missing or invalid token)
+ *       403:
+ *         description: Forbidden (admin only)
+ *       500:
+ *         description: Server error
+ */
+router.post(
+  "/",
+  requireAuth,
+  requireAdmin,
+  (req: AuthenticatedRequest, res: Response) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: "Bruger ikke autentificeret." });
+      }
+
+      const body = req.body as CreateQuizRequest;
+
+      const validationError = validateCreateQuizRequest(body);
+      if (validationError) {
+        return res.status(400).json({ error: validationError });
+      }
+
+      const data = loadQuizzes();
+      const existingIds = data.quizzes.map((quiz) => quiz.id);
+      const quizId = generateQuizId(body.title, existingIds);
+
+      const quiz: Quiz = {
+        id: quizId,
+        title: body.title,
+        description: body.description,
+        category: body.category,
+        difficulty: body.difficulty,
+        language: "da",
+        shuffleQuestions: true,
+        shuffleOptions: true,
+        allowedHtmlTags: ["strong", "br", "span"],
+        allowedHtmlStyles: ["font-style: italic", "text-decoration: underline"],
+        rules: {
+          singleChoicePoints: 1,
+          multipleChoicePoints: 1,
+          clozePoints: 1,
+          multipleChoiceScoring: {
+            mode: "partial_with_negative",
+            description:
+              "Ved spørgsmål med flere korrekte svar gives delvise point for korrekte valg og fratræk for forkerte valg. Point kan ikke blive mindre end 0.",
+          },
+        },
+        questions: body.questions.map(buildStoredQuestion),
+      };
+
+      data.quizzes.push(quiz);
+      saveQuizzes(data);
+
+      return res.status(201).json({
+        message: "Quiz oprettet.",
+        quiz: {
+          id: quiz.id,
+          title: quiz.title,
+          link: `/quizzes/${quiz.id}`,
+        },
+      });
+    } catch (error) {
+      console.error("Could not create quiz:", error);
+      return res.status(500).json({ error: "Kunne ikke oprette quizzen." });
+    }
+  },
+);
 
 export default router;

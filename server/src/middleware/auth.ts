@@ -18,14 +18,18 @@ export function requireAuth(
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Manglende eller ugyldig authorization header." });
+    return res.status(401).json({
+      error: "Manglende eller ugyldig authorization header.",
+    });
   }
 
   const token = authHeader.substring("Bearer ".length).trim();
   const user = getUserByToken(token);
 
   if (!user) {
-    return res.status(401).json({ error: "Ugyldig eller udløbet token." });
+    return res.status(401).json({
+      error: "Ugyldig eller udløbet token.",
+    });
   }
 
   req.user = user;
