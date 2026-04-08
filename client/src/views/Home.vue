@@ -9,6 +9,18 @@ import {
   UsersIcon,
   ArrowUpTrayIcon,
 } from '@heroicons/vue/24/solid'
+import { getAllResults } from '@/api'
+
+onMounted(async () => {
+  loadUser()
+
+  try {
+    const data = await getAllResults()
+    console.log("ADMIN RESULTS:", data)
+  } catch (e) {
+    console.error(e)
+  }
+})
 
 const router = useRouter()
 const user = currentUser

@@ -114,4 +114,34 @@ router.get("/:resultId", (req: AuthenticatedRequest, res: Response) => {
   }
 });
 
+router.get("/admin/all", (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Ikke autentificeret." });
+    }
+
+    // Only allow admins
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ error: "Kun admins har adgang." });
+    }
+
+    const data = loadResults();
+
+    const allResults = data.results.map((result) => ({
+      id: result.id,
+      userId: result.userId,
+      quizTitle: result.quizTitle,
+      totalPoints: result.totalPoints,
+      maxPoints: result.maxPoints,
+      percentage: result.percentage,
+      submittedAt: result.submittedAt,
+    }));
+
+    return res.json({ results: allResults });
+  } catch (error) {
+    console.error("Could not fetch admin results:", error);
+    return res.status(500).json({ error: "Kunne ikke hente data." });
+  }
+});
+
 export default router;

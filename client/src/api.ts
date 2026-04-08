@@ -181,3 +181,17 @@ export async function getResultById(resultId: string): Promise<ResultDetail> {
 export function logout() {
   setAuth(null, null)
 }
+
+export async function getAllResults() {
+  const res = await fetch(`${API_BASE}/results/admin/all`, {
+    headers: getAuthHeaders(),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data?.error || "Failed to fetch admin results");
+  }
+
+  return data.results;
+}
