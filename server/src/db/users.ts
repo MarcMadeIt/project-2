@@ -20,10 +20,10 @@ export interface User {
   Your project currently has server/schema/users.json,
   so this path should match that.
 */
-const DATA_FILE = join(process.cwd(), "schema", "users.json");
+const DATA_FILE = join(process.cwd(), "data", "users.json");
 
 function ensureDataDir() {
-  const dir = join(process.cwd(), "schema");
+  const dir = join(process.cwd(), "data");
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true });
   }

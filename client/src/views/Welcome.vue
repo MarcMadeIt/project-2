@@ -8,11 +8,11 @@ const router = useRouter()
   <div class="min-h-screen bg-base-200 flex flex-col">
     <!-- Hero -->
     <div class="hero flex-1">
-      <div class="hero-content text-center flex-col gap-8 max-w-2xl">
+      <div class="hero-content text-center gap-8 max-w-2xl" style="flex-direction: column;">
         <!-- Logo / Icon -->
-        <div class="flex flex-col items-center gap-4">
+        <div class="flex items-center gap-4" style="flex-direction: row;">
           <div
-            class="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center text-4xl"
+            class="w-20 h-20 shrink-0 rounded-2xl bg-primary/10 flex items-center justify-center text-4xl"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -29,7 +29,7 @@ const router = useRouter()
               />
             </svg>
           </div>
-          <h1 class="text-5xl font-bold tracking-tight">Quiz Platform</h1>
+          <h1 class="text-5xl font-bold tracking-tight">Quiz</h1>
         </div>
 
         <p class="text-lg text-base-content/70 max-w-md">
@@ -118,7 +118,7 @@ const router = useRouter()
 
     <!-- Footer -->
     <footer class="footer footer-center p-4 text-base-content/50 text-sm">
-      <p>Quiz Platform &middot; 2. Semester &middot; Datastrukturer</p>
+      <p>Quiz &middot; 2. Semester &middot; Datastrukturer</p>
     </footer>
   </div>
 </template>
