@@ -8,6 +8,7 @@ import HomeView from '@/views/Home.vue'
 import QuizView from '@/views/Quiz.vue'
 import ResultsView from '@/views/Results.vue'
 import ResultDetailView from '@/views/ResultDetail.vue'
+import AdminResultsView from '@/views/AdminResults.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,6 +52,11 @@ const router = createRouter({
       path: '/results/:id',
       name: 'result-detail',
       component: ResultDetailView,
+    },
+    {
+      path: '/admin/results',
+      name: 'admin-results',
+      component: AdminResultsView,
     }
   ],
 })

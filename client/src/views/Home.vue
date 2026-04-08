@@ -13,13 +13,7 @@ import { getAllResults } from '@/api'
 
 onMounted(async () => {
   loadUser()
-
-  try {
-    const data = await getAllResults()
-    console.log("ADMIN RESULTS:", data)
-  } catch (e) {
-    console.error(e)
-  }
+  
 })
 
 const router = useRouter()
@@ -112,7 +106,9 @@ function onLogout() {
 
         <!-- Admin only cards -->
         <template v-if="user?.role === 'admin'">
-          <div
+          <router-link
+            v-if="user?.role === 'admin'"
+            :to="{ name: 'admin-results' }"
             class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow border border-primary/10"
           >
             <div class="card-body">
@@ -126,7 +122,7 @@ function onLogout() {
                 </div>
               </div>
             </div>
-          </div>
+          </router-link>
 
           <div
             class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow border border-primary/10"
