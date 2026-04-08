@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { API_BASE, getStoredToken } from '@/api'
+import { API_BASE, getAuthHeaders } from '@/api'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
@@ -96,7 +96,7 @@ async function fetchQuiz() {
   error.value = ''
   try {
     const res = await fetch(`${API_BASE}/quizzes/${quizId.value}`, {
-      headers: { Authorization: `Bearer ${getStoredToken()}` },
+      headers: getAuthHeaders(),
     })
     if (!res.ok) throw new Error('Kunne ikke hente quizzen.')
     quiz.value = await res.json()
@@ -169,10 +169,7 @@ async function submit() {
   try {
     const res = await fetch(`${API_BASE}/quizzes/${quizId.value}/validate`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${getStoredToken()}`,
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ answers: payload }),
     })
     if (!res.ok) throw new Error('Kunne ikke validere svarene.')

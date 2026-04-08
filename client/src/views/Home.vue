@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { currentUser, isLoggedIn, loadUser, logout } from '@/api'
+import { API_BASE, currentUser, getAuthHeaders, isLoggedIn, loadUser, logout } from '@/api'
 import {
   LightBulbIcon,
   ClipboardDocumentCheckIcon,
@@ -9,15 +9,23 @@ import {
   UsersIcon,
   ArrowUpTrayIcon,
 } from '@heroicons/vue/24/solid'
-import { getAllResults } from '@/api'
+
+interface QuizData {
+  id: string
+  title: string
+  link: string
+}
 
 onMounted(async () => {
   loadUser()
-  
+  fetchQuizes()
 })
 
 const router = useRouter()
 const user = currentUser
+const loading = ref(true)
+const error = ref('')
+const quizzes = ref<QuizData[] | null>(null)
 
 onMounted(() => {
   loadUser()
@@ -26,6 +34,22 @@ onMounted(() => {
 function onLogout() {
   logout()
   router.push({ name: 'welcome' })
+}
+
+async function fetchQuizes() {
+  loading.value = true
+  error.value = ''
+  try {
+    const res = await fetch(`${API_BASE}/quizzes`, {
+      headers: getAuthHeaders(),
+    })
+    if (!res.ok) throw new Error('Kunne ikke hente quizzen.')
+    quizzes.value = (await res.json())?.quizzes as QuizData[]
+  } catch (e: any) {
+    error.value = e.message || 'Noget gik galt.'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -68,23 +92,43 @@ function onLogout() {
 
       <!-- Role-based dashboard cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Always shown: Quiz -->
-        <router-link
-          :to="{ name: 'quiz', params: { id: 'quiz_datastructures_001' } }"
-          class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-        >
-          <div class="card-body">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <ClipboardDocumentCheckIcon class="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <h2 class="font-semibold">Tag en quiz</h2>
-                <p class="text-sm text-base-content/50">Datastrukturer</p>
+        <!-- Quizzes from API -->
+        <template v-if="!loading && quizzes">
+          <router-link
+            v-for="quiz in quizzes"
+            :key="quiz.id"
+            :to="{ name: 'quiz', params: { id: quiz.id } }"
+            class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+          >
+            <div class="card-body">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <ClipboardDocumentCheckIcon class="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h2 class="font-semibold">{{ quiz.title }}</h2>
+                  <p class="text-sm text-base-content/50">Quiz</p>
+                </div>
               </div>
             </div>
+          </router-link>
+        </template>
+
+        <!-- Loading state -->
+        <template v-if="loading">
+          <div class="card bg-base-100 shadow-sm">
+            <div class="card-body flex items-center justify-center">
+              <span class="loading loading-spinner"></span>
+            </div>
           </div>
-        </router-link>
+        </template>
+
+        <!-- Error state -->
+        <template v-if="error">
+          <div class="alert alert-error">
+            <span>{{ error }}</span>
+          </div>
+        </template>
 
         <!-- Always shown: Results -->
         <router-link
