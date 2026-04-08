@@ -92,7 +92,7 @@ async function onSubmit() {
 
 <template>
   <div class="min-h-screen flex items-center justify-center p-4">
-    <div class="w-full">
+    <div class="w-full max-w-md">
       <!-- Back link -->
       <router-link to="/" class="btn btn-ghost btn-sm gap-1 mb-4 -ml-2">
         <ChevronLeftIcon class="w-4 h-4" />
