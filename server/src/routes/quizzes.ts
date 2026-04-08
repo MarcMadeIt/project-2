@@ -213,6 +213,22 @@ function scoreMultipleChoice(
   return Math.max(0, Math.min(1, plus - minus));
 }
 
+function getUserAnswerText(
+  question: Question,
+  userAnswer: string[] | string,
+): string[] | string {
+  if (question.type === "single_choice" || question.type === "multiple_choice") {
+    if (!Array.isArray(userAnswer)) return []
+
+    return userAnswer.map((answerId) => {
+      const option = question.options.find((opt) => opt.id === answerId)
+      return option ? option.text : answerId
+    })
+  }
+
+  return typeof userAnswer === "string" ? userAnswer : ""
+}
+
 /**
  * @openapi
  * /quizzes/{id}/validate:
@@ -387,16 +403,26 @@ router.post("/:id/validate", (req: AuthenticatedRequest, res: Response) => {
       maxPoints,
       percentage,
       submittedAt: new Date().toISOString(),
-      answers: results.map((result) => ({
-        questionId: result.questionId,
-        userAnswer: result.userAnswer,
-        correct: result.correct,
-        points: result.points,
-        maxPoints: result.maxPoints,
-        correctAnswer: result.correctAnswer,
-      })),
-    };
+      answers: results.map((result) => {
+        const originalQuestion = quiz.questions.find(
+          (q) => q.id === result.questionId,
+        );
 
+        return {
+          questionId: result.questionId,
+          questionText: originalQuestion?.questionText ?? result.questionId,
+          userAnswer: result.userAnswer,
+          userAnswerText: originalQuestion
+            ? getUserAnswerText(originalQuestion, result.userAnswer)
+            : result.userAnswer,
+          correct: result.correct,
+          points: result.points,
+          maxPoints: result.maxPoints,
+          correctAnswer: result.correctAnswer,
+        };
+      }),
+    };
+    
     const resultsFile = loadResults();
     resultsFile.results.push(storedResult);
     saveResults(resultsFile);

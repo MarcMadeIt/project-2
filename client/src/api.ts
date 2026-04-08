@@ -127,7 +127,9 @@ export interface ResultSummary {
 
 export interface ResultAnswer {
   questionId: string
+  questionText?: string
   userAnswer: string[] | string
+  userAnswerText?: string[] | string
   correct: boolean
   points: number
   maxPoints: number

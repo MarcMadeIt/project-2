@@ -129,13 +129,18 @@ onMounted(async () => {
 
               <div class="text-sm text-base-content/70 space-y-2">
                 <p>
-                  <strong>Dit svar:</strong>
-                  {{ formatUserAnswer(answer.userAnswer) }}
+                <strong>Spørgsmål:</strong>
+                {{ answer.questionText || `Spørgsmål ${index + 1}` }}
                 </p>
 
                 <p>
-                  <strong>Korrekt svar:</strong>
-                  {{ formatCorrectAnswer(answer.correctAnswer) }}
+                <strong>Dit svar:</strong>
+                {{ formatUserAnswer(answer.userAnswerText ?? answer.userAnswer) }}
+                </p>
+
+                <p v-if="!answer.correct">
+                <strong>Korrekt svar:</strong>
+                {{ formatCorrectAnswer(answer.correctAnswer) }}
                 </p>
 
                 <p>
