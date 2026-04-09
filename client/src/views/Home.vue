@@ -140,7 +140,7 @@ async function fetchQuizes() {
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <router-link
           :to="{ name: 'results' }"
-          class="btn btn-ghost h-auto py-4 flex items-center gap-3 justify-start"
+          class="btn btn-soft h-auto py-4 flex items-center gap-3 justify-start"
         >
           <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
             <ChartBarIcon class="w-5 h-5 text-secondary" />
@@ -154,7 +154,7 @@ async function fetchQuizes() {
         <template v-if="user?.role === 'admin'">
           <router-link
             :to="{ name: 'admin-results' }"
-            class="btn btn-ghost h-auto py-4 flex items-center gap-3 justify-start"
+            class="btn btn-soft h-auto py-4 flex items-center gap-3 justify-start"
           >
             <div class="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
               <UsersIcon class="w-5 h-5 text-warning" />
@@ -167,7 +167,7 @@ async function fetchQuizes() {
 
           <router-link
             :to="{ name: 'admin-create-quiz' }"
-            class="btn btn-ghost h-auto py-4 flex items-center gap-3 justify-start"
+            class="btn btn-soft h-auto py-4 flex items-center gap-3 justify-start"
           >
             <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
               <ArrowUpTrayIcon class="w-5 h-5 text-accent" />
