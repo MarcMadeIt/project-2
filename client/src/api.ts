@@ -257,7 +257,6 @@ export async function createQuiz(payload: CreateQuizRequest) {
 
   return data
 }
-<<<<<<< Updated upstream
 
 export async function deleteQuiz(quizId: string) {
   const res = await fetch(`${API_BASE}/quizzes/${quizId}`, {
@@ -273,5 +272,3 @@ export async function deleteQuiz(quizId: string) {
 
   return data
 }
-=======
->>>>>>> Stashed changes
