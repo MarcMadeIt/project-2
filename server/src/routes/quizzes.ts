@@ -459,7 +459,6 @@ router.post("/:id/validate", (req: AuthenticatedRequest, res: Response) => {
         };
       }),
     };
-    console.log("🚀 ~ storedResult:", storedResult)
     
     const resultsFile = loadResults();
     resultsFile.results.push(storedResult);
