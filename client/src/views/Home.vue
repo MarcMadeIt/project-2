@@ -90,98 +90,91 @@ async function fetchQuizes() {
         </div>
       </div>
 
-      <!-- Role-based dashboard cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Quizzes from API -->
-        <template v-if="!loading && quizzes">
-          <router-link
-            v-for="quiz in quizzes"
-            :key="quiz.id"
-            :to="{ name: 'quiz', params: { id: quiz.id } }"
-            class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-          >
-            <div class="card-body">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <ClipboardDocumentCheckIcon class="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <h2 class="font-semibold">{{ quiz.title }}</h2>
-                  <p class="text-sm text-base-content/50">Quiz</p>
-                </div>
-              </div>
-            </div>
-          </router-link>
-        </template>
+      <!-- Quizzer -->
+      <div class="mb-8">
+        <h2 class="text-lg font-semibold mb-3">Quizzer</h2>
 
-        <!-- Loading state -->
         <template v-if="loading">
-          <div class="card bg-base-100 shadow-sm">
-            <div class="card-body flex items-center justify-center">
-              <span class="loading loading-spinner"></span>
-            </div>
+          <div class="flex items-center justify-center py-8">
+            <span class="loading loading-spinner"></span>
           </div>
         </template>
 
-        <!-- Error state -->
-        <template v-if="error">
+        <template v-else-if="error">
           <div class="alert alert-error">
             <span>{{ error }}</span>
           </div>
         </template>
 
-        <!-- Always shown: Results -->
+        <template v-else-if="quizzes && quizzes.length">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <router-link
+              v-for="quiz in quizzes"
+              :key="quiz.id"
+              :to="{ name: 'quiz', params: { id: quiz.id } }"
+              class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+            >
+              <div class="card-body">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <ClipboardDocumentCheckIcon class="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h2 class="font-semibold">{{ quiz.title }}</h2>
+                    <p class="text-sm text-base-content/50">Quiz</p>
+                  </div>
+                </div>
+              </div>
+            </router-link>
+          </div>
+        </template>
+
+        <template v-else>
+          <p class="text-base-content/50">Ingen quizzer tilgængelige.</p>
+        </template>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Action buttons -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <router-link
           :to="{ name: 'results' }"
-          class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow"
+          class="btn btn-outline h-auto py-4 flex items-center gap-3 justify-start"
         >
-          <div class="card-body">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center">
-                <ChartBarIcon class="w-5 h-5 text-secondary" />
-              </div>
-              <div>
-                <h2 class="font-semibold">Mine resultater</h2>
-                <p class="text-sm text-base-content/50">Historik & statistik</p>
-              </div>
-            </div>
+          <div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
+            <ChartBarIcon class="w-5 h-5 text-secondary" />
+          </div>
+          <div class="text-left">
+            <div class="font-semibold">Mine resultater</div>
+            <div class="text-xs text-base-content/50 font-normal">Historik & statistik</div>
           </div>
         </router-link>
 
-        <!-- Admin only cards -->
         <template v-if="user?.role === 'admin'">
           <router-link
-            v-if="user?.role === 'admin'"
             :to="{ name: 'admin-results' }"
-            class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow border border-primary/10"
+            class="btn btn-outline h-auto py-4 flex items-center gap-3 justify-start border-primary/20"
           >
-            <div class="card-body">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center">
-                  <UsersIcon class="w-5 h-5 text-warning" />
-                </div>
-                <div>
-                  <h2 class="font-semibold">Brugeroversigt</h2>
-                  <p class="text-sm text-base-content/50">Alle brugere & resultater</p>
-                </div>
-              </div>
+            <div class="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
+              <UsersIcon class="w-5 h-5 text-warning" />
+            </div>
+            <div class="text-left">
+              <div class="font-semibold">Brugeroversigt</div>
+              <div class="text-xs text-base-content/50 font-normal">Alle brugere & resultater</div>
             </div>
           </router-link>
 
           <router-link
             :to="{ name: 'admin-create-quiz' }"
-            class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow border border-primary/10"
+            class="btn btn-outline h-auto py-4 flex items-center gap-3 justify-start border-primary/20"
           >
-            <div class="card-body">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                  <ArrowUpTrayIcon class="w-5 h-5 text-accent" />
-                </div>
-                <div>
-                  <h2 class="font-semibold">Opret quiz</h2>
-                  <p class="text-sm text-base-content/50">Multichoice quizzer</p>
-                </div>
-              </div>
+            <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+              <ArrowUpTrayIcon class="w-5 h-5 text-accent" />
+            </div>
+            <div class="text-left">
+              <div class="font-semibold">Opret quiz</div>
+              <div class="text-xs text-base-content/50 font-normal">Multichoice quizzer</div>
             </div>
           </router-link>
         </template>
