@@ -3,18 +3,20 @@ import { computed, ref } from 'vue'
 export const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 
 export function getAuthHeaders() {
-  const token = localStorage.getItem("auth_token");
+  const token = localStorage.getItem('auth_token')
 
   return {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
+  }
 }
+
+/* PROTECTED ROUTE */
 
 export interface User {
   id: string
   email: string
-  role: "admin" | "user"
+  role: 'admin' | 'user'
   createdAt: string
 }
 
@@ -33,7 +35,10 @@ function parseStoredUser(): User | null {
 }
 
 export const currentUser = ref<User | null>(parseStoredUser())
+
 export const isLoggedIn = computed(() => !!currentUser.value)
+
+/**/
 
 export function getStoredToken(): string | null {
   return localStorage.getItem(tokenKey)
@@ -187,15 +192,15 @@ export function logout() {
 export async function getAllResults() {
   const res = await fetch(`${API_BASE}/results/admin/all`, {
     headers: getAuthHeaders(),
-  });
+  })
 
-  const data = await res.json();
+  const data = await res.json()
 
   if (!res.ok) {
-    throw new Error(data?.error || "Failed to fetch admin results");
+    throw new Error(data?.error || 'Failed to fetch admin results')
   }
 
-  return data.results;
+  return data.results
 }
 
 export interface CreateOptionRequest {
@@ -252,6 +257,7 @@ export async function createQuiz(payload: CreateQuizRequest) {
 
   return data
 }
+<<<<<<< Updated upstream
 
 export async function deleteQuiz(quizId: string) {
   const res = await fetch(`${API_BASE}/quizzes/${quizId}`, {
@@ -267,3 +273,5 @@ export async function deleteQuiz(quizId: string) {
 
   return data
 }
+=======
+>>>>>>> Stashed changes

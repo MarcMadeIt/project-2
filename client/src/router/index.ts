@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { isLoggedIn, currentUser } from '@/api'
+import { isLoggedIn } from '@/api'
 
 import WelcomeView from '@/views/Welcome.vue'
 import LoginView from '@/views/Login.vue'
@@ -10,7 +10,6 @@ import ResultsView from '@/views/Results.vue'
 import ResultDetailView from '@/views/ResultDetail.vue'
 import AdminResultsView from '@/views/AdminResults.vue'
 import AdminCreateQuizView from '@/views/AdminCreateQuiz.vue'
-
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -64,7 +63,7 @@ const router = createRouter({
       path: '/admin/create-quiz',
       name: 'admin-create-quiz',
       component: AdminCreateQuizView,
-    }
+    },
   ],
 })
 
