@@ -285,8 +285,8 @@ onMounted(fetchQuiz)
                     class="text-sm text-base-content/70"
                     v-html="getQuestionByResult(r)?.questionText"
                   ></p>
-                  <div v-if="!r.correct" class="mt-2 text-xs">
-                    <span class="text-error">Dit svar: </span>
+                  <div class="mt-2 text-xs">
+                    <span :class="r.correct ? 'text-success' : 'text-error'">Dit svar: </span>
                     <span class="text-base-content/60">
                       <template v-if="Array.isArray(r.userAnswer)">
                         <template v-if="r.userAnswer.length === 0">Intet svar</template>
@@ -308,17 +308,20 @@ onMounted(fetchQuiz)
                       <template v-else>{{ r.userAnswer || 'Intet svar' }}</template>
                     </span>
                     <br />
-                    <span class="text-success">Korrekt: </span>
-                    <span class="text-base-content/60">
+                    <span v-if="!r.correct" class="text-success">Korrekt: </span>
+                    <span v-if="!r.correct" class="text-base-content/60">
                       {{
                         r.correctAnswer
-                          .map((id) => {
+                          .map((entry) => {
+                            if (typeof entry === 'object' && entry !== null && 'text' in entry) {
+                              return (entry as { id: string; text: string }).text
+                            }
                             const q = getQuestionByResult(r)
                             if (q && q.type !== 'cloze') {
-                              const opt = q.options.find((o) => o.id === id)
-                              return opt ? opt.text : id
+                              const opt = q.options.find((o) => o.id === entry)
+                              return opt ? opt.text : entry
                             }
-                            return id
+                            return entry
                           })
                           .join(', ')
                       }}
