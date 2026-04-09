@@ -9,8 +9,15 @@
       "language": "da",
       "shuffleQuestions": true,
       "shuffleOptions": true,
-      "allowedHtmlTags": ["strong", "br", "span"],
-      "allowedHtmlStyles": ["font-style: italic", "text-decoration: underline"],
+      "allowedHtmlTags": [
+        "strong",
+        "br",
+        "span"
+      ],
+      "allowedHtmlStyles": [
+        "font-style: italic",
+        "text-decoration: underline"
+      ],
       "rules": {
         "singleChoicePoints": 1,
         "multipleChoicePoints": 1,
@@ -26,12 +33,26 @@
           "type": "single_choice",
           "questionText": "Hvilken datastruktur arbejder typisk efter princippet <strong>FIFO</strong>?",
           "options": [
-            { "id": "a", "text": "Stack" },
-            { "id": "b", "text": "Queue" },
-            { "id": "c", "text": "Binary tree" },
-            { "id": "d", "text": "Hash table" }
+            {
+              "id": "a",
+              "text": "Stack"
+            },
+            {
+              "id": "b",
+              "text": "Queue"
+            },
+            {
+              "id": "c",
+              "text": "Binary tree"
+            },
+            {
+              "id": "d",
+              "text": "Hash table"
+            }
           ],
-          "correctAnswers": ["b"],
+          "correctAnswers": [
+            "b"
+          ],
           "explanation": "En queue følger FIFO: First In, First Out."
         },
         {
@@ -39,12 +60,26 @@
           "type": "single_choice",
           "questionText": "Hvilken datastruktur arbejder typisk efter princippet <strong>LIFO</strong>?",
           "options": [
-            { "id": "a", "text": "Queue" },
-            { "id": "b", "text": "Graph" },
-            { "id": "c", "text": "Stack" },
-            { "id": "d", "text": "ArrayList" }
+            {
+              "id": "a",
+              "text": "Queue"
+            },
+            {
+              "id": "b",
+              "text": "Graph"
+            },
+            {
+              "id": "c",
+              "text": "Stack"
+            },
+            {
+              "id": "d",
+              "text": "ArrayList"
+            }
           ],
-          "correctAnswers": ["c"],
+          "correctAnswers": [
+            "c"
+          ],
           "explanation": "En stack følger LIFO: Last In, First Out."
         },
         {
@@ -52,12 +87,28 @@
           "type": "multiple_choice",
           "questionText": "Hvilke udsagn om et <strong>array</strong> er korrekte?",
           "options": [
-            { "id": "a", "text": "Elementer ligger typisk samlet i hukommelsen." },
-            { "id": "b", "text": "Adgang via indeks er normalt hurtig." },
-            { "id": "c", "text": "Indsættelse midt i arrayet er altid gratis." },
-            { "id": "d", "text": "Et array har ofte fast størrelse." }
+            {
+              "id": "a",
+              "text": "Elementer ligger typisk samlet i hukommelsen."
+            },
+            {
+              "id": "b",
+              "text": "Adgang via indeks er normalt hurtig."
+            },
+            {
+              "id": "c",
+              "text": "Indsættelse midt i arrayet er altid gratis."
+            },
+            {
+              "id": "d",
+              "text": "Et array har ofte fast størrelse."
+            }
           ],
-          "correctAnswers": ["a", "b", "d"],
+          "correctAnswers": [
+            "a",
+            "b",
+            "d"
+          ],
           "explanation": "Arrays har hurtig indeksadgang og ofte fast størrelse, men indsættelse i midten kræver typisk forskydning af elementer."
         },
         {
@@ -65,12 +116,26 @@
           "type": "single_choice",
           "questionText": "Hvad er en væsentlig fordel ved en <strong>linked list</strong> sammenlignet med et array?",
           "options": [
-            { "id": "a", "text": "Direkte adgang til vilkårligt element via indeks er hurtigere." },
-            { "id": "b", "text": "Indsættelse og sletning kan være nemmere, når man har reference til den rigtige position." },
-            { "id": "c", "text": "Den bruger aldrig ekstra hukommelse." },
-            { "id": "d", "text": "Den sorterer automatisk sine elementer." }
+            {
+              "id": "a",
+              "text": "Direkte adgang til vilkårligt element via indeks er hurtigere."
+            },
+            {
+              "id": "b",
+              "text": "Indsættelse og sletning kan være nemmere, når man har reference til den rigtige position."
+            },
+            {
+              "id": "c",
+              "text": "Den bruger aldrig ekstra hukommelse."
+            },
+            {
+              "id": "d",
+              "text": "Den sorterer automatisk sine elementer."
+            }
           ],
-          "correctAnswers": ["b"],
+          "correctAnswers": [
+            "b"
+          ],
           "explanation": "Linked lists er ofte gode til indsættelse og sletning, men ikke til hurtig indeksadgang."
         },
         {
@@ -78,12 +143,26 @@
           "type": "single_choice",
           "questionText": "Hvilken datastruktur bruges ofte til at håndtere <span style=\"font-style: italic\">funktionskald</span> i et program?",
           "options": [
-            { "id": "a", "text": "Queue" },
-            { "id": "b", "text": "Stack" },
-            { "id": "c", "text": "Hash set" },
-            { "id": "d", "text": "Heap file" }
+            {
+              "id": "a",
+              "text": "Queue"
+            },
+            {
+              "id": "b",
+              "text": "Stack"
+            },
+            {
+              "id": "c",
+              "text": "Hash set"
+            },
+            {
+              "id": "d",
+              "text": "Heap file"
+            }
           ],
-          "correctAnswers": ["b"],
+          "correctAnswers": [
+            "b"
+          ],
           "explanation": "Call stack bruges til at holde styr på aktive funktionskald."
         },
         {
@@ -91,19 +170,39 @@
           "type": "multiple_choice",
           "questionText": "Hvilke af følgende datastrukturer er <strong>ikke-lineære</strong>?",
           "options": [
-            { "id": "a", "text": "Binary tree" },
-            { "id": "b", "text": "Graph" },
-            { "id": "c", "text": "Queue" },
-            { "id": "d", "text": "Stack" }
+            {
+              "id": "a",
+              "text": "Binary tree"
+            },
+            {
+              "id": "b",
+              "text": "Graph"
+            },
+            {
+              "id": "c",
+              "text": "Queue"
+            },
+            {
+              "id": "d",
+              "text": "Stack"
+            }
           ],
-          "correctAnswers": ["a", "b"],
+          "correctAnswers": [
+            "a",
+            "b"
+          ],
           "explanation": "Træer og grafer er ikke-lineære datastrukturer."
         },
         {
           "id": "ds_q07",
           "type": "cloze",
           "questionText": "En datastruktur der lagrer data som nøgle-værdi-par, kaldes ofte en <strong>____</strong>.",
-          "acceptedAnswers": ["hash table", "hashtable", "map", "dictionary"],
+          "acceptedAnswers": [
+            "hash table",
+            "hashtable",
+            "map",
+            "dictionary"
+          ],
           "caseSensitive": false,
           "trimWhitespace": true,
           "explanation": "Hash table, map og dictionary bruges ofte om denne type struktur, afhængigt af sprog og kontekst."
@@ -113,12 +212,26 @@
           "type": "single_choice",
           "questionText": "Hvad er typisk den gennemsnitlige tidskompleksitet for opslag i en god <strong>hash table</strong>?",
           "options": [
-            { "id": "a", "text": "O(1)" },
-            { "id": "b", "text": "O(log n)" },
-            { "id": "c", "text": "O(n)" },
-            { "id": "d", "text": "O(n log n)" }
+            {
+              "id": "a",
+              "text": "O(1)"
+            },
+            {
+              "id": "b",
+              "text": "O(log n)"
+            },
+            {
+              "id": "c",
+              "text": "O(n)"
+            },
+            {
+              "id": "d",
+              "text": "O(n log n)"
+            }
           ],
-          "correctAnswers": ["a"],
+          "correctAnswers": [
+            "a"
+          ],
           "explanation": "Ved en god hashfunktion og lav kollisionsrate er opslag typisk O(1) i gennemsnit."
         },
         {
@@ -126,12 +239,27 @@
           "type": "multiple_choice",
           "questionText": "Hvilke udsagn om <strong>binary search trees</strong> er korrekte?",
           "options": [
-            { "id": "a", "text": "Venstre barn er mindre end noden, og højre barn er større end noden." },
-            { "id": "b", "text": "De er altid perfekt balancerede." },
-            { "id": "c", "text": "Søgning kan være effektiv, hvis træet er balanceret." },
-            { "id": "d", "text": "De kan ikke indeholde tal." }
+            {
+              "id": "a",
+              "text": "Venstre barn er mindre end noden, og højre barn er større end noden."
+            },
+            {
+              "id": "b",
+              "text": "De er altid perfekt balancerede."
+            },
+            {
+              "id": "c",
+              "text": "Søgning kan være effektiv, hvis træet er balanceret."
+            },
+            {
+              "id": "d",
+              "text": "De kan ikke indeholde tal."
+            }
           ],
-          "correctAnswers": ["a", "c"],
+          "correctAnswers": [
+            "a",
+            "c"
+          ],
           "explanation": "BST-reglen gælder for placering af værdier, og balancerede træer giver bedre ydeevne."
         },
         {
@@ -139,19 +267,36 @@
           "type": "single_choice",
           "questionText": "Hvilken datastruktur er mest oplagt til at behandle elementer i den rækkefølge, de ankommer?",
           "options": [
-            { "id": "a", "text": "Queue" },
-            { "id": "b", "text": "Stack" },
-            { "id": "c", "text": "Binary heap" },
-            { "id": "d", "text": "TreeSet" }
+            {
+              "id": "a",
+              "text": "Queue"
+            },
+            {
+              "id": "b",
+              "text": "Stack"
+            },
+            {
+              "id": "c",
+              "text": "Binary heap"
+            },
+            {
+              "id": "d",
+              "text": "TreeSet"
+            }
           ],
-          "correctAnswers": ["a"],
+          "correctAnswers": [
+            "a"
+          ],
           "explanation": "Queue bevarer ankomst-rækkefølgen."
         },
         {
           "id": "ds_q11",
           "type": "cloze",
           "questionText": "En <strong>stack</strong> bruger princippet <strong>____</strong>.",
-          "acceptedAnswers": ["lifo", "last in first out"],
+          "acceptedAnswers": [
+            "lifo",
+            "last in first out"
+          ],
           "caseSensitive": false,
           "trimWhitespace": true,
           "explanation": "Stack er baseret på Last In, First Out."
@@ -161,12 +306,28 @@
           "type": "multiple_choice",
           "questionText": "Hvilke operationer forbindes typisk med en <strong>stack</strong>?",
           "options": [
-            { "id": "a", "text": "push" },
-            { "id": "b", "text": "pop" },
-            { "id": "c", "text": "enqueue" },
-            { "id": "d", "text": "peek" }
+            {
+              "id": "a",
+              "text": "push"
+            },
+            {
+              "id": "b",
+              "text": "pop"
+            },
+            {
+              "id": "c",
+              "text": "enqueue"
+            },
+            {
+              "id": "d",
+              "text": "peek"
+            }
           ],
-          "correctAnswers": ["a", "b", "d"],
+          "correctAnswers": [
+            "a",
+            "b",
+            "d"
+          ],
           "explanation": "push, pop og peek er klassiske stack-operationer, mens enqueue hører til queue."
         }
       ]
@@ -180,8 +341,15 @@
       "language": "da",
       "shuffleQuestions": true,
       "shuffleOptions": true,
-      "allowedHtmlTags": ["strong", "br", "span"],
-      "allowedHtmlStyles": ["font-style: italic", "text-decoration: underline"],
+      "allowedHtmlTags": [
+        "strong",
+        "br",
+        "span"
+      ],
+      "allowedHtmlStyles": [
+        "font-style: italic",
+        "text-decoration: underline"
+      ],
       "rules": {
         "singleChoicePoints": 1,
         "multipleChoicePoints": 1,
@@ -197,12 +365,26 @@
           "type": "single_choice",
           "questionText": "Hvad bruges <strong>HTML</strong> primært til?",
           "options": [
-            { "id": "a", "text": "At definere struktur og indhold på en webside" },
-            { "id": "b", "text": "At style websiden" },
-            { "id": "c", "text": "At håndtere databaseforespørgsler" },
-            { "id": "d", "text": "At kompilere JavaScript" }
+            {
+              "id": "a",
+              "text": "At definere struktur og indhold på en webside"
+            },
+            {
+              "id": "b",
+              "text": "At style websiden"
+            },
+            {
+              "id": "c",
+              "text": "At håndtere databaseforespørgsler"
+            },
+            {
+              "id": "d",
+              "text": "At kompilere JavaScript"
+            }
           ],
-          "correctAnswers": ["a"],
+          "correctAnswers": [
+            "a"
+          ],
           "explanation": "HTML beskriver struktur og indhold, mens CSS og JavaScript har andre roller."
         },
         {
@@ -210,12 +392,26 @@
           "type": "single_choice",
           "questionText": "Hvad bruges <strong>CSS</strong> primært til?",
           "options": [
-            { "id": "a", "text": "At definere sidens logik" },
-            { "id": "b", "text": "At style og layout'e indhold" },
-            { "id": "c", "text": "At gemme data permanent" },
-            { "id": "d", "text": "At validere passwords på serveren" }
+            {
+              "id": "a",
+              "text": "At definere sidens logik"
+            },
+            {
+              "id": "b",
+              "text": "At style og layout'e indhold"
+            },
+            {
+              "id": "c",
+              "text": "At gemme data permanent"
+            },
+            {
+              "id": "d",
+              "text": "At validere passwords på serveren"
+            }
           ],
-          "correctAnswers": ["b"],
+          "correctAnswers": [
+            "b"
+          ],
           "explanation": "CSS bruges til præsentation, layout og visuel styling."
         },
         {
@@ -223,12 +419,28 @@
           "type": "multiple_choice",
           "questionText": "Hvilke af følgende er <strong>semantiske HTML-tags</strong>?",
           "options": [
-            { "id": "a", "text": "<header>" },
-            { "id": "b", "text": "<article>" },
-            { "id": "c", "text": "<div>" },
-            { "id": "d", "text": "<footer>" }
+            {
+              "id": "a",
+              "text": "<header>"
+            },
+            {
+              "id": "b",
+              "text": "<article>"
+            },
+            {
+              "id": "c",
+              "text": "<div>"
+            },
+            {
+              "id": "d",
+              "text": "<footer>"
+            }
           ],
-          "correctAnswers": ["a", "b", "d"],
+          "correctAnswers": [
+            "a",
+            "b",
+            "d"
+          ],
           "explanation": "header, article og footer er semantiske; div er generisk."
         },
         {
@@ -236,19 +448,36 @@
           "type": "single_choice",
           "questionText": "Hvad betyder det, at en webapplikation er <strong>responsiv</strong>?",
           "options": [
-            { "id": "a", "text": "At den kun virker på mobiltelefoner" },
-            { "id": "b", "text": "At layoutet tilpasser sig forskellige skærmstørrelser" },
-            { "id": "c", "text": "At serveren svarer på under 1 ms" },
-            { "id": "d", "text": "At siden ikke bruger CSS" }
+            {
+              "id": "a",
+              "text": "At den kun virker på mobiltelefoner"
+            },
+            {
+              "id": "b",
+              "text": "At layoutet tilpasser sig forskellige skærmstørrelser"
+            },
+            {
+              "id": "c",
+              "text": "At serveren svarer på under 1 ms"
+            },
+            {
+              "id": "d",
+              "text": "At siden ikke bruger CSS"
+            }
           ],
-          "correctAnswers": ["b"],
+          "correctAnswers": [
+            "b"
+          ],
           "explanation": "Responsivt design betyder, at siden tilpasser sig forskellige enheder og viewport-størrelser."
         },
         {
           "id": "wd_q05",
           "type": "cloze",
           "questionText": "Protokollen der normalt bruges til at overføre websider mellem browser og server, hedder <strong>____</strong>.",
-          "acceptedAnswers": ["http", "https"],
+          "acceptedAnswers": [
+            "http",
+            "https"
+          ],
           "caseSensitive": false,
           "trimWhitespace": true,
           "explanation": "HTTP er grundprotokollen, og HTTPS er den sikre variant."
@@ -258,12 +487,26 @@
           "type": "single_choice",
           "questionText": "Hvilken HTTP-metode bruges typisk til at <strong>hente</strong> data?",
           "options": [
-            { "id": "a", "text": "POST" },
-            { "id": "b", "text": "PUT" },
-            { "id": "c", "text": "GET" },
-            { "id": "d", "text": "DELETE" }
+            {
+              "id": "a",
+              "text": "POST"
+            },
+            {
+              "id": "b",
+              "text": "PUT"
+            },
+            {
+              "id": "c",
+              "text": "GET"
+            },
+            {
+              "id": "d",
+              "text": "DELETE"
+            }
           ],
-          "correctAnswers": ["c"],
+          "correctAnswers": [
+            "c"
+          ],
           "explanation": "GET bruges normalt til at hente ressourcer fra serveren."
         },
         {
@@ -271,12 +514,28 @@
           "type": "multiple_choice",
           "questionText": "Hvilke udsagn om <strong>JavaScript</strong> i browseren er korrekte?",
           "options": [
-            { "id": "a", "text": "Det kan ændre HTML-indhold dynamisk." },
-            { "id": "b", "text": "Det kan reagere på klik og andre events." },
-            { "id": "c", "text": "Det erstatter altid behovet for en server." },
-            { "id": "d", "text": "Det kan manipulere DOM'en." }
+            {
+              "id": "a",
+              "text": "Det kan ændre HTML-indhold dynamisk."
+            },
+            {
+              "id": "b",
+              "text": "Det kan reagere på klik og andre events."
+            },
+            {
+              "id": "c",
+              "text": "Det erstatter altid behovet for en server."
+            },
+            {
+              "id": "d",
+              "text": "Det kan manipulere DOM'en."
+            }
           ],
-          "correctAnswers": ["a", "b", "d"],
+          "correctAnswers": [
+            "a",
+            "b",
+            "d"
+          ],
           "explanation": "JavaScript kan arbejde med DOM og events, men kan ikke altid erstatte serverlogik."
         },
         {
@@ -284,12 +543,26 @@
           "type": "single_choice",
           "questionText": "Hvad står <strong>DOM</strong> for?",
           "options": [
-            { "id": "a", "text": "Data Object Model" },
-            { "id": "b", "text": "Document Object Model" },
-            { "id": "c", "text": "Display Oriented Markup" },
-            { "id": "d", "text": "Document Ordering Method" }
+            {
+              "id": "a",
+              "text": "Data Object Model"
+            },
+            {
+              "id": "b",
+              "text": "Document Object Model"
+            },
+            {
+              "id": "c",
+              "text": "Display Oriented Markup"
+            },
+            {
+              "id": "d",
+              "text": "Document Ordering Method"
+            }
           ],
-          "correctAnswers": ["b"],
+          "correctAnswers": [
+            "b"
+          ],
           "explanation": "DOM står for Document Object Model."
         },
         {
@@ -297,12 +570,28 @@
           "type": "multiple_choice",
           "questionText": "Hvilke teknikker bruges ofte til at forbedre <strong>websikkerhed</strong>?",
           "options": [
-            { "id": "a", "text": "Inputvalidering" },
-            { "id": "b", "text": "Sanitering af HTML" },
-            { "id": "c", "text": "At stole på alt input fra klienten" },
-            { "id": "d", "text": "Hashing af passwords" }
+            {
+              "id": "a",
+              "text": "Inputvalidering"
+            },
+            {
+              "id": "b",
+              "text": "Sanitering af HTML"
+            },
+            {
+              "id": "c",
+              "text": "At stole på alt input fra klienten"
+            },
+            {
+              "id": "d",
+              "text": "Hashing af passwords"
+            }
           ],
-          "correctAnswers": ["a", "b", "d"],
+          "correctAnswers": [
+            "a",
+            "b",
+            "d"
+          ],
           "explanation": "Inputvalidering, sanitering og sikker lagring af passwords er centrale sikkerhedsforanstaltninger."
         },
         {
@@ -310,19 +599,38 @@
           "type": "single_choice",
           "questionText": "Hvad bruges <strong>localStorage</strong> typisk til i browseren?",
           "options": [
-            { "id": "a", "text": "At gemme små mængder data lokalt i browseren" },
-            { "id": "b", "text": "At erstatte serverens database i alle systemer" },
-            { "id": "c", "text": "At skrive CSS-regler automatisk" },
-            { "id": "d", "text": "At sende e-mails fra klienten uden server" }
+            {
+              "id": "a",
+              "text": "At gemme små mængder data lokalt i browseren"
+            },
+            {
+              "id": "b",
+              "text": "At erstatte serverens database i alle systemer"
+            },
+            {
+              "id": "c",
+              "text": "At skrive CSS-regler automatisk"
+            },
+            {
+              "id": "d",
+              "text": "At sende e-mails fra klienten uden server"
+            }
           ],
-          "correctAnswers": ["a"],
+          "correctAnswers": [
+            "a"
+          ],
           "explanation": "localStorage bruges til simpel lokal lagring i browseren."
         },
         {
           "id": "wd_q11",
           "type": "cloze",
           "questionText": "Sproget der ofte bruges til styling af websider, hedder <strong>____</strong>.",
-          "acceptedAnswers": ["css", "cascading style sheets", "cascading stylesheet", "cascading style sheet"],
+          "acceptedAnswers": [
+            "css",
+            "cascading style sheets",
+            "cascading stylesheet",
+            "cascading style sheet"
+          ],
           "caseSensitive": false,
           "trimWhitespace": true,
           "explanation": "CSS står for Cascading Style Sheets."
@@ -332,12 +640,26 @@
           "type": "single_choice",
           "questionText": "Hvad er formålet med et <strong>API</strong> i webudvikling?",
           "options": [
-            { "id": "a", "text": "At definere hvordan forskellige systemer kan kommunikere med hinanden" },
-            { "id": "b", "text": "At erstatte HTML fuldstændigt" },
-            { "id": "c", "text": "At gøre alle databaser offentlige" },
-            { "id": "d", "text": "At forhindre brug af JavaScript" }
+            {
+              "id": "a",
+              "text": "At definere hvordan forskellige systemer kan kommunikere med hinanden"
+            },
+            {
+              "id": "b",
+              "text": "At erstatte HTML fuldstændigt"
+            },
+            {
+              "id": "c",
+              "text": "At gøre alle databaser offentlige"
+            },
+            {
+              "id": "d",
+              "text": "At forhindre brug af JavaScript"
+            }
           ],
-          "correctAnswers": ["a"],
+          "correctAnswers": [
+            "a"
+          ],
           "explanation": "Et API beskriver, hvordan klienter og systemer kan udveksle data og funktionalitet."
         }
       ]

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
-import { createQuiz, type CreateQuizRequest } from '@/api'
-import { ChevronLeftIcon, ArrowUpTrayIcon } from '@heroicons/vue/24/outline'
+import { createQuiz, uploadQuizFile, type CreateQuizRequest } from '@/api'
+import { ChevronLeftIcon, DocumentArrowUpIcon } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 
@@ -71,6 +71,45 @@ function addAcceptedAnswer(question: AdminQuestionForm) {
 function removeAcceptedAnswer(question: AdminQuestionForm, index: number) {
   if (question.acceptedAnswers.length <= 1) return
   question.acceptedAnswers.splice(index, 1)
+}
+
+// File upload state
+const selectedFile = ref<File | null>(null)
+const uploadLoading = ref(false)
+const uploadSuccess = ref('')
+const uploadError = ref('')
+
+function onFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement
+  if (input.files && input.files.length > 0) {
+    selectedFile.value = input.files[0]
+  }
+}
+
+async function onUploadFile() {
+  uploadSuccess.value = ''
+  uploadError.value = ''
+
+  if (!selectedFile.value) {
+    uploadError.value = 'Vælg en fil først.'
+    return
+  }
+
+  const ext = selectedFile.value.name.split('.').pop()?.toLowerCase()
+  if (ext !== 'json' && ext !== 'xml') {
+    uploadError.value = 'Kun .json og .xml filer er tilladt.'
+    return
+  }
+
+  uploadLoading.value = true
+  try {
+    await uploadQuizFile(selectedFile.value)
+    router.push('/home')
+  } catch (e) {
+    uploadError.value = e instanceof Error ? e.message : 'Kunne ikke uploade fil.'
+  } finally {
+    uploadLoading.value = false
+  }
 }
 
 // UI state
@@ -165,11 +204,51 @@ async function onSubmit() {
           Tilbage
         </RouterLink>
 
-        <div class="flex items-center gap-2">
-          <ArrowUpTrayIcon class="w-6 h-6 text-accent" />
-          <h1 class="text-2xl font-bold">Opret quiz</h1>
+        <h1 class="text-2xl font-bold">Opret quiz</h1>
+      </div>
+
+      <!-- File upload section -->
+      <div class="card bg-base-100 shadow-sm mb-6">
+        <div class="card-body space-y-4">
+          <div class="flex items-center gap-2">
+            <DocumentArrowUpIcon class="w-5 h-5 text-accent" />
+            <h2 class="text-lg font-semibold">Upload quizfil</h2>
+          </div>
+
+          <p class="text-sm text-base-content/70">
+            Upload en <strong>.json</strong> eller <strong>.xml</strong> quizfil direkte.
+          </p>
+
+          <div v-if="uploadSuccess" class="alert alert-success">
+            {{ uploadSuccess }}
+          </div>
+          <div v-if="uploadError" class="alert alert-error">
+            {{ uploadError }}
+          </div>
+
+          <div class="flex gap-3 items-end">
+            <label class="form-control w-full">
+              <span class="label-text mb-1">Vælg fil</span>
+              <input
+                id="quiz-file-input"
+                type="file"
+                accept=".json,.xml"
+                class="file-input file-input-bordered w-full"
+                @change="onFileSelected"
+              />
+            </label>
+            <button
+              class="btn btn-accent"
+              :disabled="uploadLoading || !selectedFile"
+              @click="onUploadFile"
+            >
+              {{ uploadLoading ? 'Uploader...' : 'Upload' }}
+            </button>
+          </div>
         </div>
       </div>
+
+      <div class="divider">ELLER opret manuelt</div>
 
       <div class="card bg-base-100 shadow-sm">
         <div class="card-body space-y-6">

@@ -2,6 +2,8 @@ import crypto from "crypto";
 import { Router, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
+import multer from "multer";
+import { parseStringPromise } from "xml2js";
 import { QuizFile, Question, ResultsFile, StoredQuizResult, Quiz, CreateQuizRequest, Option, CreateQuestionRequest } from "../types/quiz";
 import { requireAuth, AuthenticatedRequest } from "../middleware/auth";
 import { requireAdmin } from "../middleware/admin";
@@ -795,6 +797,215 @@ router.post(
     } catch (error) {
       console.error("Could not create quiz:", error);
       return res.status(500).json({ error: "Kunne ikke oprette quizzen." });
+    }
+  },
+);
+
+// Multer setup for file uploads (memory storage, max 5MB)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ext === ".json" || ext === ".xml") {
+      cb(null, true);
+    } else {
+      cb(new Error("Kun .json og .xml filer er tilladt."));
+    }
+  },
+});
+
+// Parse an uploaded XML quiz file into the internal Quiz format
+async function parseXmlQuiz(xmlString: string): Promise<Omit<Quiz, "id">> {
+  const parsed = await parseStringPromise(xmlString, {
+    explicitArray: false,
+    trim: true,
+  });
+
+  const root = parsed.quiz;
+  if (!root) throw new Error("XML skal have et <quiz> rod-element.");
+
+  const rawQuestions = Array.isArray(root.questions?.question)
+    ? root.questions.question
+    : root.questions?.question
+      ? [root.questions.question]
+      : [];
+
+  const questions: Question[] = rawQuestions.map(
+    (q: Record<string, any>, idx: number) => {
+      const qId = q.$.id || `q${idx + 1}`;
+      const type = q.$.type as string;
+      const questionText = q.text || q.questionText || "";
+
+      if (type === "cloze") {
+        const accepted = Array.isArray(q.acceptedAnswers?.answer)
+          ? q.acceptedAnswers.answer
+          : q.acceptedAnswers?.answer
+            ? [q.acceptedAnswers.answer]
+            : [];
+
+        return {
+          id: qId,
+          type: "cloze" as const,
+          questionText,
+          acceptedAnswers: accepted.map((a: any) =>
+            typeof a === "string" ? a : a._ || a,
+          ),
+          caseSensitive: q.caseSensitive === "true",
+          trimWhitespace: q.trimWhitespace !== "false",
+        };
+      }
+
+      // single_choice or multiple_choice
+      const rawOptions = Array.isArray(q.options?.option)
+        ? q.options.option
+        : q.options?.option
+          ? [q.options.option]
+          : [];
+
+      const options: Option[] = rawOptions.map(
+        (o: any, oIdx: number) => ({
+          id: o.$.id || String.fromCharCode(97 + oIdx),
+          text: typeof o === "string" ? o : o._ || o,
+        }),
+      );
+
+      const rawCorrect = Array.isArray(q.correctAnswers?.answer)
+        ? q.correctAnswers.answer
+        : q.correctAnswers?.answer
+          ? [q.correctAnswers.answer]
+          : [];
+
+      const correctAnswers = rawCorrect.map((a: any) =>
+        typeof a === "string" ? a : a._ || a,
+      );
+
+      return {
+        id: qId,
+        type: (type === "multiple_choice"
+          ? "multiple_choice"
+          : "single_choice") as "single_choice" | "multiple_choice",
+        questionText,
+        options,
+        correctAnswers,
+      };
+    },
+  );
+
+  return {
+    title: root.title || "Uploadet quiz",
+    description: root.description || "",
+    category: root.category || "Generel",
+    difficulty: root.difficulty || "medium",
+    language: root.language || "da",
+    shuffleQuestions: true,
+    shuffleOptions: true,
+    allowedHtmlTags: ["strong", "br", "span"],
+    allowedHtmlStyles: ["font-style: italic", "text-decoration: underline"],
+    rules: {
+      singleChoicePoints: 1,
+      multipleChoicePoints: 1,
+      clozePoints: 1,
+      multipleChoiceScoring: {
+        mode: "partial_with_negative",
+        description:
+          "Ved spørgsmål med flere korrekte svar gives delvise point for korrekte valg og fratræk for forkerte valg.",
+      },
+    },
+    questions,
+  };
+}
+
+// Parse an uploaded JSON quiz file into the internal Quiz format
+function parseJsonQuizFile(jsonString: string): Omit<Quiz, "id"> {
+  const parsed = JSON.parse(jsonString);
+
+  // If the file already matches our Quiz structure, use it directly
+  if (parsed.title && Array.isArray(parsed.questions)) {
+    return {
+      title: parsed.title,
+      description: parsed.description || "",
+      category: parsed.category || "Generel",
+      difficulty: parsed.difficulty || "medium",
+      language: parsed.language || "da",
+      shuffleQuestions: parsed.shuffleQuestions ?? true,
+      shuffleOptions: parsed.shuffleOptions ?? true,
+      allowedHtmlTags: parsed.allowedHtmlTags || ["strong", "br", "span"],
+      allowedHtmlStyles: parsed.allowedHtmlStyles || [
+        "font-style: italic",
+        "text-decoration: underline",
+      ],
+      rules: parsed.rules || {
+        singleChoicePoints: 1,
+        multipleChoicePoints: 1,
+        clozePoints: 1,
+        multipleChoiceScoring: {
+          mode: "partial_with_negative",
+          description:
+            "Ved spørgsmål med flere korrekte svar gives delvise point for korrekte valg og fratræk for forkerte valg.",
+        },
+      },
+      questions: parsed.questions,
+    };
+  }
+
+  throw new Error(
+    "JSON-filen skal have mindst 'title' og 'questions' felter.",
+  );
+}
+
+router.post(
+  "/upload",
+  requireAuth,
+  requireAdmin,
+  upload.single("quizFile"),
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "Ingen fil uploadet." });
+      }
+
+      const fileContent = req.file.buffer.toString("utf-8");
+      const ext = path.extname(req.file.originalname).toLowerCase();
+
+      let quizData: Omit<Quiz, "id">;
+
+      if (ext === ".xml") {
+        quizData = await parseXmlQuiz(fileContent);
+      } else {
+        quizData = parseJsonQuizFile(fileContent);
+      }
+
+      const data = loadQuizzes();
+      const existingIds = data.quizzes.map((q) => q.id);
+      const quizId = generateQuizId(quizData.title, existingIds);
+
+      const quiz: Quiz = { id: quizId, ...quizData };
+
+      if (!isValidQuiz(quiz)) {
+        return res.status(400).json({
+          error:
+            "Quizfilen har et ugyldigt format. Tjek at alle spørgsmål har korrekt struktur.",
+        });
+      }
+
+      data.quizzes.push(quiz);
+      saveQuizzes(data);
+
+      return res.status(201).json({
+        message: "Quiz uploadet.",
+        quiz: {
+          id: quiz.id,
+          title: quiz.title,
+          link: `/quizzes/${quiz.id}`,
+          questionsCount: quiz.questions.length,
+        },
+      });
+    } catch (error: any) {
+      console.error("Could not upload quiz:", error);
+      return res.status(400).json({
+        error: error.message || "Kunne ikke uploade quizfilen.",
+      });
     }
   },
 );

@@ -36,15 +36,27 @@ function onLogout() {
   router.push({ name: 'welcome' })
 }
 
-async function onDeleteQuiz(quizId: string) {
-  const confirmed = window.confirm('Er du sikker på, at du vil slette denne quiz?')
-  if (!confirmed) return
+const deleteTarget = ref<QuizData | null>(null)
+const deleteLoading = ref(false)
 
+function openDeleteModal(quiz: QuizData) {
+  deleteTarget.value = quiz
+  ;(document.getElementById('delete-modal') as HTMLDialogElement)?.showModal()
+}
+
+async function confirmDelete() {
+  if (!deleteTarget.value) return
+
+  deleteLoading.value = true
   try {
-    await deleteQuiz(quizId)
+    await deleteQuiz(deleteTarget.value.id)
+    ;(document.getElementById('delete-modal') as HTMLDialogElement)?.close()
+    deleteTarget.value = null
     await fetchQuizes()
   } catch (e: any) {
     error.value = e.message || 'Kunne ikke slette quizzen.'
+  } finally {
+    deleteLoading.value = false
   }
 }
 
@@ -144,7 +156,7 @@ async function fetchQuizes() {
                   <button
                     v-if="user?.role === 'admin'"
                     class="btn btn-sm btn-error btn-outline"
-                    @click="onDeleteQuiz(quiz.id)"
+                    @click="openDeleteModal(quiz)"
                   >
                     Fjern
                   </button>
@@ -206,5 +218,32 @@ async function fetchQuizes() {
         </template>
       </div>
     </main>
+
+    <!-- Delete confirmation modal -->
+    <dialog id="delete-modal" class="modal">
+      <div class="modal-box">
+        <h3 class="text-lg font-bold">Slet quiz</h3>
+        <p class="py-4">
+          Er du sikker på, at du vil slette
+          <strong>{{ deleteTarget?.title }}</strong
+          >?
+        </p>
+        <div class="modal-action">
+          <form method="dialog">
+            <button class="btn">Annuller</button>
+          </form>
+          <button
+            class="btn btn-error"
+            :disabled="deleteLoading"
+            @click="confirmDelete"
+          >
+            {{ deleteLoading ? 'Sletter...' : 'Slet' }}
+          </button>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
   </div>
 </template>

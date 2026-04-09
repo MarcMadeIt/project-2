@@ -258,6 +258,28 @@ export async function createQuiz(payload: CreateQuizRequest) {
   return data
 }
 
+export async function uploadQuizFile(file: File) {
+  const token = localStorage.getItem('auth_token')
+  const formData = new FormData()
+  formData.append('quizFile', file)
+
+  const res = await fetch(`${API_BASE}/quizzes/upload`, {
+    method: 'POST',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: formData,
+  })
+
+  const data = await res.json().catch(() => ({}))
+
+  if (!res.ok) {
+    throw new Error(data?.error ?? 'Kunne ikke uploade quizfil')
+  }
+
+  return data
+}
+
 export async function deleteQuiz(quizId: string) {
   const res = await fetch(`${API_BASE}/quizzes/${quizId}`, {
     method: 'DELETE',
