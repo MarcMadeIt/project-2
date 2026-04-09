@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { API_BASE, getAuthHeaders } from '@/api'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
@@ -62,6 +62,8 @@ const currentIndex = ref(0)
 const answers = ref<Map<string, string[] | string>>(new Map())
 const submitting = ref(false)
 const result = ref<ValidationResult | null>(null)
+const startTime = ref<number | null>(null)
+const timeTakenSeconds = ref<number | null>(null)
 
 const quizId = computed(() => (route.params.id as string) || 'quiz_datastructures_001')
 
@@ -100,6 +102,7 @@ async function fetchQuiz() {
     })
     if (!res.ok) throw new Error('Kunne ikke hente quizzen.')
     quiz.value = await res.json()
+    startTime.value = Date.now()
   } catch (e: any) {
     error.value = e.message || 'Noget gik galt.'
   } finally {
@@ -161,6 +164,9 @@ async function submit() {
   if (!quiz.value) return
   submitting.value = true
 
+  const elapsed = startTime.value !== null ? Math.round((Date.now() - startTime.value) / 1000) : null
+  timeTakenSeconds.value = elapsed
+
   const payload = quiz.value.questions.map((q) => ({
     questionId: q.id,
     answer: answers.value.get(q.id) ?? (q.type === 'cloze' ? '' : []),
@@ -170,7 +176,7 @@ async function submit() {
     const res = await fetch(`${API_BASE}/quizzes/${quizId.value}/validate`, {
       method: 'POST',
       headers: getAuthHeaders(),
-      body: JSON.stringify({ answers: payload }),
+      body: JSON.stringify({ answers: payload, timeTakenSeconds: elapsed }),
     })
     if (!res.ok) throw new Error('Kunne ikke validere svarene.')
     result.value = await res.json()
@@ -185,6 +191,8 @@ function restart() {
   answers.value = new Map()
   currentIndex.value = 0
   result.value = null
+  startTime.value = Date.now()
+  timeTakenSeconds.value = null
 }
 
 function getQuestionByResult(r: QuestionResult): Question | undefined {
@@ -228,6 +236,9 @@ onMounted(fetchQuiz)
             <div class="text-5xl font-bold text-primary mb-1">{{ result.percentage }}%</div>
             <p class="text-base-content/60 mb-4">
               {{ result.totalPoints.toFixed(1) }} ud af {{ result.maxPoints }} point
+            </p>
+            <p v-if="timeTakenSeconds !== null" class="text-sm text-base-content/50 mb-4">
+              Tid brugt: {{ Math.floor(timeTakenSeconds / 60) > 0 ? Math.floor(timeTakenSeconds / 60) + 'm ' : '' }}{{ timeTakenSeconds % 60 }}s
             </p>
 
             <div class="w-full bg-base-200 rounded-full h-3 mb-6">

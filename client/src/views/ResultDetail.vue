@@ -14,6 +14,14 @@ function formatDate(dateString: string) {
   return new Date(dateString).toLocaleString('da-DK')
 }
 
+function formatDuration(seconds: number | undefined): string {
+  if (seconds == null) return '–'
+  const m = Math.floor(seconds / 60)
+  const s = seconds % 60
+  if (m === 0) return `${s}s`
+  return `${m}m ${s}s`
+}
+
 function formatUserAnswer(answer: ResultAnswer['userAnswer']) {
   if (Array.isArray(answer)) {
     return answer.length ? answer.join(', ') : 'Intet svar'
@@ -102,6 +110,13 @@ onMounted(async () => {
                 <div class="stat-title">Spørgsmål</div>
                 <div class="stat-value text-2xl">
                   {{ answerCount }}
+                </div>
+              </div>
+
+              <div class="stat bg-base-200 rounded-box">
+                <div class="stat-title">Tid brugt</div>
+                <div class="stat-value text-2xl">
+                  {{ formatDuration(result.timeTakenSeconds) }}
                 </div>
               </div>
             </div>

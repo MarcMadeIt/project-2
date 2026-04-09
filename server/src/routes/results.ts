@@ -55,6 +55,7 @@ router.get("/", (req: AuthenticatedRequest, res: Response) => {
         maxPoints: result.maxPoints,
         percentage: result.percentage,
         submittedAt: result.submittedAt,
+        timeTakenSeconds: result.timeTakenSeconds,
       }));
 
     return res.json({
@@ -116,6 +117,53 @@ router.get("/:resultId", (req: AuthenticatedRequest, res: Response) => {
   }
 });
 
+/**
+ * @openapi
+ * /results/admin/all:
+ *   get:
+ *     summary: Get all quiz results (admin only)
+ *     tags:
+ *       - Results
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all results across all users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       userId:
+ *                         type: string
+ *                       quizTitle:
+ *                         type: string
+ *                       totalPoints:
+ *                         type: number
+ *                       maxPoints:
+ *                         type: number
+ *                       percentage:
+ *                         type: number
+ *                       submittedAt:
+ *                         type: string
+ *                         format: date-time
+ *                       timeTakenSeconds:
+ *                         type: integer
+ *                         nullable: true
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden – admins only
+ *       500:
+ *         description: Server error
+ */
 router.get(
   "/admin/all",
   requireAdmin,
@@ -135,6 +183,7 @@ router.get(
           maxPoints: result.maxPoints,
           percentage: result.percentage,
           submittedAt: result.submittedAt,
+          timeTakenSeconds: result.timeTakenSeconds,
         };
       });
       return res.json({ results: allResults });

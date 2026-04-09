@@ -81,6 +81,7 @@ export interface StoredQuizResult {
   maxPoints: number;
   percentage: number;
   submittedAt: string;
+  timeTakenSeconds?: number;
   answers: StoredAnswerResult[];
 }
 

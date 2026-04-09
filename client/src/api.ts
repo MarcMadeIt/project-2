@@ -123,6 +123,7 @@ export interface ResultSummary {
   maxPoints: number
   percentage: number
   submittedAt: string
+  timeTakenSeconds?: number
 }
 
 export interface ResultAnswer {
@@ -145,6 +146,7 @@ export interface ResultDetail {
   maxPoints: number
   percentage: number
   submittedAt: string
+  timeTakenSeconds?: number
   answers: ResultAnswer[]
 }
 

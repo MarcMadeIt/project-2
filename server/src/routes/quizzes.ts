@@ -201,6 +201,7 @@ interface ValidateQuizRequest {
     questionId: string;
     answer: string[] | string;
   }[];
+  timeTakenSeconds?: number;
 }
 
 function normalizeString(
@@ -286,6 +287,8 @@ function getUserAnswerText(
  *           schema:
  *             type: object
  *             properties:
+ *               timeTakenSeconds:
+ *                 type: number
  *               answers:
  *                 type: array
  *                 items:
@@ -436,6 +439,7 @@ router.post("/:id/validate", (req: AuthenticatedRequest, res: Response) => {
       maxPoints,
       percentage,
       submittedAt: new Date().toISOString(),
+      timeTakenSeconds: body.timeTakenSeconds,
       answers: results.map((result) => {
         const originalQuestion = quiz.questions.find(
           (q) => q.id === result.questionId,
@@ -455,6 +459,7 @@ router.post("/:id/validate", (req: AuthenticatedRequest, res: Response) => {
         };
       }),
     };
+    console.log("🚀 ~ storedResult:", storedResult)
     
     const resultsFile = loadResults();
     resultsFile.results.push(storedResult);
