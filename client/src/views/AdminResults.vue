@@ -7,6 +7,7 @@ import { ChevronLeftIcon, UsersIcon } from '@heroicons/vue/24/outline'
 interface AdminResult {
   id: string
   userId: string
+  userEmail: string
   quizTitle: string
   totalPoints: number
   maxPoints: number
@@ -73,7 +74,7 @@ onMounted(async () => {
           </thead>
           <tbody>
             <tr v-for="result in results" :key="result.id">
-              <td>{{ result.userId }}</td>
+              <td>{{ result.userEmail }}</td>
               <td>{{ result.quizTitle }}</td>
               <td>{{ result.totalPoints }} / {{ result.maxPoints }}</td>
               <td>

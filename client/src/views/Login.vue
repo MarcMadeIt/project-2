@@ -81,7 +81,7 @@ async function onSubmit() {
             <!-- Email -->
             <div class="form-control">
               <label class="label" for="login-email">
-                <span class="label-text font-medium">Email</span>
+                <span class="label-text font-medium">Brugernavn (din email)</span>
               </label>
               <input
                 id="login-email"

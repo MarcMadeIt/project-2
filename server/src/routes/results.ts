@@ -4,6 +4,7 @@ import path from "path";
 import { requireAuth, AuthenticatedRequest } from "../middleware/auth";
 import { ResultsFile } from "../types/quiz";
 import { requireAdmin } from "../middleware/admin";
+import { findById } from "../db/users";
 
 const router = Router();
 const resultsFilePath = path.join(__dirname, "..", "..", "data", "results.json");
@@ -122,17 +123,22 @@ router.get(
     try {
       const data = loadResults();
 
-      const allResults = data.results.map((result) => ({
-        id: result.id,
-        userId: result.userId,
-        quizTitle: result.quizTitle,
-        totalPoints: result.totalPoints,
-        maxPoints: result.maxPoints,
-        percentage: result.percentage,
-        submittedAt: result.submittedAt,
-      }));
+      const allResults = data.results.map((result) => {
+        const user = findById(result.userId);
 
+        return {
+          id: result.id,
+          userId: result.userId,
+          userEmail: user?.email ?? "Ukendt bruger",
+          quizTitle: result.quizTitle,
+          totalPoints: result.totalPoints,
+          maxPoints: result.maxPoints,
+          percentage: result.percentage,
+          submittedAt: result.submittedAt,
+        };
+      });
       return res.json({ results: allResults });
+      
     } catch (error) {
       console.error("Could not fetch admin results:", error);
       return res.status(500).json({ error: "Kunne ikke hente data." });
