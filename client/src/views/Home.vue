@@ -178,8 +178,8 @@ async function fetchQuizes() {
                   <ArrowUpTrayIcon class="w-5 h-5 text-accent" />
                 </div>
                 <div>
-                  <h2 class="font-semibold">Upload quiz</h2>
-                  <p class="text-sm text-base-content/50">XML / JSON quizfiler</p>
+                  <h2 class="font-semibold">Opret quiz</h2>
+                  <p class="text-sm text-base-content/50">Multichoice quizzer</p>
                 </div>
               </div>
             </div>
