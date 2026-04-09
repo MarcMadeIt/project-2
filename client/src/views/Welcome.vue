@@ -64,10 +64,5 @@ const router = useRouter()
         </div>
       </div>
     </div>
-
-    <!-- Footer -->
-    <footer class="footer footer-center p-4 text-base-content/50 text-sm">
-      <p>Quiz &middot; 2. Semester &middot; Datastrukturer</p>
-    </footer>
   </div>
 </template>
