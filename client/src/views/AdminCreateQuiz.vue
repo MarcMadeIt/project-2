@@ -12,13 +12,66 @@ const description = ref('')
 const category = ref('')
 const difficulty = ref('medium')
 
-// question for now
-const questionText = ref('')
-const option1 = ref('')
-const option2 = ref('')
-const option3 = ref('')
-const option4 = ref('')
-const correctAnswerIndex = ref(0)
+type AdminQuestionType = 'single_choice' | 'multiple_choice' | 'cloze'
+
+interface AdminQuestionForm {
+  type: AdminQuestionType
+  questionText: string
+  options: string[]
+  correctAnswers: number[]
+  acceptedAnswers: string[]
+  caseSensitive: boolean
+  trimWhitespace: boolean
+}
+
+function createEmptyQuestion(): AdminQuestionForm {
+  return {
+    type: 'single_choice',
+    questionText: '',
+    options: ['', ''],
+    correctAnswers: [0],
+    acceptedAnswers: [''],
+    caseSensitive: false,
+    trimWhitespace: true,
+  }
+}
+
+const questions = ref<AdminQuestionForm[]>([createEmptyQuestion()])
+
+function addQuestion() {
+  questions.value.push(createEmptyQuestion())
+}
+
+function removeQuestion(index: number) {
+  if (questions.value.length === 1) return
+  questions.value.splice(index, 1)
+}
+
+function addOption(question: AdminQuestionForm) {
+  question.options.push('')
+}
+
+function removeOption(question: AdminQuestionForm, optionIndex: number) {
+  if (question.options.length <= 2) return
+  question.options.splice(optionIndex, 1)
+
+  question.correctAnswers = question.correctAnswers
+    .filter((i) => i !== optionIndex)
+    .map((i) => (i > optionIndex ? i - 1 : i))
+
+  if (question.type === 'single_choice' && question.correctAnswers.length === 0) {
+    question.correctAnswers = [0]
+  }
+}
+
+function addAcceptedAnswer(question: AdminQuestionForm) {
+  question.acceptedAnswers.push('')
+}
+
+function removeAcceptedAnswer(question: AdminQuestionForm, index: number) {
+  if (question.acceptedAnswers.length <= 1) return
+  question.acceptedAnswers.splice(index, 1)
+}
 
 // UI state
 const loading = ref(false)
@@ -31,17 +84,17 @@ async function onSubmit() {
   errorMessage.value = ''
 
   // frontend safety check
-  if (
+    if (
     !title.value.trim() ||
     !description.value.trim() ||
     !category.value.trim() ||
     !difficulty.value.trim() ||
-    !questionText.value.trim() ||
-    !option1.value.trim() ||
-    !option2.value.trim() ||
-    !option3.value.trim() ||
-    !option4.value.trim()
-  ) {
+    questions.value.some(
+        (q) =>
+        !q.questionText.trim() ||
+        (q.type !== 'cloze' && q.options.some((opt) => !opt.trim())),
+    )
+    ) {
     errorMessage.value = 'Udfyld alle felter.'
     return
   }
@@ -52,19 +105,33 @@ async function onSubmit() {
     description: description.value,
     category: category.value,
     difficulty: difficulty.value,
-    questions: [
-      {
-        type: 'single_choice',
-        questionText: questionText.value,
-        options: [
-          { text: option1.value },
-          { text: option2.value },
-          { text: option3.value },
-          { text: option4.value },
-        ],
-        correctAnswers: [correctAnswerIndex.value],
-      },
-    ],
+    questions: questions.value.map((q) => {
+    if (q.type === 'cloze') {
+        return {
+        type: 'cloze' as const,
+        questionText: q.questionText,
+        acceptedAnswers: q.acceptedAnswers.filter((a) => a.trim() !== ''),
+        caseSensitive: q.caseSensitive,
+        trimWhitespace: q.trimWhitespace,
+        }
+    }
+
+    if (q.type === 'multiple_choice') {
+        return {
+        type: 'multiple_choice' as const,
+        questionText: q.questionText,
+        options: q.options.map((o) => ({ text: o })),
+        correctAnswers: q.correctAnswers,
+        }
+    }
+
+    return {
+        type: 'single_choice' as const,
+        questionText: q.questionText,
+        options: q.options.map((o) => ({ text: o })),
+        correctAnswers: q.correctAnswers.slice(0, 1),
+    }
+    })
   }
 
   loading.value = true
@@ -79,12 +146,7 @@ async function onSubmit() {
     description.value = ''
     category.value = ''
     difficulty.value = 'medium'
-    questionText.value = ''
-    option1.value = ''
-    option2.value = ''
-    option3.value = ''
-    option4.value = ''
-    correctAnswerIndex.value = 0
+    questions.value = [createEmptyQuestion()]  
   } catch (e) {
     errorMessage.value = e instanceof Error ? e.message : 'Kunne ikke oprette quiz.'
   } finally {
@@ -153,49 +215,130 @@ async function onSubmit() {
           </div>
 
           <!-- one question -->
-          <div class="space-y-4">
-            <h2 class="text-lg font-semibold">Spørgsmål 1</h2>
-
-            <label class="form-control w-full">
-              <span class="label-text mb-1">Spørgsmålstekst</span>
-              <textarea
-                v-model="questionText"
-                class="textarea textarea-bordered w-full"
-              ></textarea>
-            </label>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <label class="form-control w-full">
-                <span class="label-text mb-1">Svarmulighed 1</span>
-                <input v-model="option1" type="text" class="input input-bordered w-full" />
-              </label>
-
-              <label class="form-control w-full">
-                <span class="label-text mb-1">Svarmulighed 2</span>
-                <input v-model="option2" type="text" class="input input-bordered w-full" />
-              </label>
-
-              <label class="form-control w-full">
-                <span class="label-text mb-1">Svarmulighed 3</span>
-                <input v-model="option3" type="text" class="input input-bordered w-full" />
-              </label>
-
-              <label class="form-control w-full">
-                <span class="label-text mb-1">Svarmulighed 4</span>
-                <input v-model="option4" type="text" class="input input-bordered w-full" />
-              </label>
+          <div class="space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-semibold">Spørgsmål</h2>
+                <button class="btn btn-sm btn-outline" @click="addQuestion">
+                + Tilføj spørgsmål
+                </button>
             </div>
 
-            <label class="form-control w-full">
-              <span class="label-text mb-1">Korrekt svar</span>
-              <select v-model="correctAnswerIndex" class="select select-bordered w-full">
-                <option :value="0">Svarmulighed 1</option>
-                <option :value="1">Svarmulighed 2</option>
-                <option :value="2">Svarmulighed 3</option>
-                <option :value="3">Svarmulighed 4</option>
-              </select>
-            </label>
-          </div>
+            <div
+                v-for="(question, qIndex) in questions"
+                :key="qIndex"
+                class="card bg-base-200 p-4 space-y-4"
+            >
+                <div class="flex justify-between items-center">
+                <h3 class="font-semibold">Spørgsmål {{ qIndex + 1 }}</h3>
+                <button
+                    class="btn btn-xs btn-error"
+                    @click="removeQuestion(qIndex)"
+                >
+                    Fjern
+                </button>
+                </div>
+
+                <!-- Question type -->
+                <label class="form-control w-full">
+                <span class="label-text mb-1">Type</span>
+                <select v-model="question.type" class="select select-bordered w-full">
+                    <option value="single_choice">Single choice</option>
+                    <option value="multiple_choice">Multiple choice</option>
+                    <option value="cloze">Cloze</option>
+                </select>
+                </label>
+
+                <!-- Question text -->
+                <label class="form-control w-full">
+                <span class="label-text mb-1">Spørgsmålstekst</span>
+                <textarea
+                    v-model="question.questionText"
+                    class="textarea textarea-bordered w-full"
+                ></textarea>
+                </label>
+
+                <!-- CHOICE QUESTIONS -->
+                <div v-if="question.type !== 'cloze'" class="space-y-2">
+                <div class="flex justify-between items-center">
+                    <span class="label-text">Svarmuligheder</span>
+                    <button
+                    class="btn btn-xs btn-outline"
+                    @click="addOption(question)"
+                    >
+                    + Tilføj svar
+                    </button>
+                </div>
+
+                <div
+                    v-for="(option, oIndex) in question.options"
+                    :key="oIndex"
+                    class="flex gap-2 items-center"
+                >
+                    <input
+                    v-model="question.options[oIndex]"
+                    class="input input-bordered w-full"
+                    />
+
+                    <button
+                    class="btn btn-xs btn-error"
+                    @click="removeOption(question, oIndex)"
+                    >
+                    ✕
+                    </button>
+
+                    <!-- SINGLE CHOICE -->
+                    <input
+                    v-if="question.type === 'single_choice'"
+                    type="radio"
+                    :checked="question.correctAnswers[0] === oIndex"
+                    @change="question.correctAnswers = [oIndex]"
+                    />
+
+                    <!-- MULTIPLE CHOICE -->
+                    <input
+                    v-if="question.type === 'multiple_choice'"
+                    type="checkbox"
+                    :checked="question.correctAnswers.includes(oIndex)"
+                    @change="
+                        question.correctAnswers.includes(oIndex)
+                        ? question.correctAnswers = question.correctAnswers.filter(i => i !== oIndex)
+                        : question.correctAnswers.push(oIndex)
+                    "
+                    />
+                </div>
+                </div>
+
+                <!-- CLOZE -->
+                <div v-if="question.type === 'cloze'" class="space-y-2">
+                <div class="flex justify-between items-center">
+                    <span class="label-text">Accepted answers</span>
+                    <button
+                    class="btn btn-xs btn-outline"
+                    @click="addAcceptedAnswer(question)"
+                    >
+                    + Tilføj svar
+                    </button>
+                </div>
+
+                <div
+                    v-for="(ans, aIndex) in question.acceptedAnswers"
+                    :key="aIndex"
+                    class="flex gap-2"
+                >
+                    <input
+                    v-model="question.acceptedAnswers[aIndex]"
+                    class="input input-bordered w-full"
+                    />
+                    <button
+                    class="btn btn-xs btn-error"
+                    @click="removeAcceptedAnswer(question, aIndex)"
+                    >
+                    ✕
+                    </button>
+                </div>
+                </div>
+            </div>
+            </div>
 
           <!-- submit -->
           <div class="pt-2">
