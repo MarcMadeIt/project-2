@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { requireAuth, AuthenticatedRequest } from "../middleware/auth";
 import { ResultsFile } from "../types/quiz";
+import { requireAdmin } from "../middleware/admin";
 
 const router = Router();
 const resultsFilePath = path.join(__dirname, "..", "..", "data", "results.json");
@@ -114,34 +115,29 @@ router.get("/:resultId", (req: AuthenticatedRequest, res: Response) => {
   }
 });
 
-router.get("/admin/all", (req: AuthenticatedRequest, res: Response) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ error: "Ikke autentificeret." });
+router.get(
+  "/admin/all",
+  requireAdmin,
+  (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const data = loadResults();
+
+      const allResults = data.results.map((result) => ({
+        id: result.id,
+        userId: result.userId,
+        quizTitle: result.quizTitle,
+        totalPoints: result.totalPoints,
+        maxPoints: result.maxPoints,
+        percentage: result.percentage,
+        submittedAt: result.submittedAt,
+      }));
+
+      return res.json({ results: allResults });
+    } catch (error) {
+      console.error("Could not fetch admin results:", error);
+      return res.status(500).json({ error: "Kunne ikke hente data." });
     }
-
-    // Only allow admins
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ error: "Kun admins har adgang." });
-    }
-
-    const data = loadResults();
-
-    const allResults = data.results.map((result) => ({
-      id: result.id,
-      userId: result.userId,
-      quizTitle: result.quizTitle,
-      totalPoints: result.totalPoints,
-      maxPoints: result.maxPoints,
-      percentage: result.percentage,
-      submittedAt: result.submittedAt,
-    }));
-
-    return res.json({ results: allResults });
-  } catch (error) {
-    console.error("Could not fetch admin results:", error);
-    return res.status(500).json({ error: "Kunne ikke hente data." });
-  }
-});
+  },
+);
 
 export default router;
