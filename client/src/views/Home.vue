@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { API_BASE, currentUser, getAuthHeaders, isLoggedIn, loadUser, logout } from '@/api'
+import { API_BASE, currentUser, getAuthHeaders, isLoggedIn, loadUser, logout, deleteQuiz,} from '@/api'
 import {
   LightBulbIcon,
   ClipboardDocumentCheckIcon,
@@ -34,6 +34,18 @@ onMounted(() => {
 function onLogout() {
   logout()
   router.push({ name: 'welcome' })
+}
+
+async function onDeleteQuiz(quizId: string) {
+  const confirmed = window.confirm('Er du sikker på, at du vil slette denne quiz?')
+  if (!confirmed) return
+
+  try {
+    await deleteQuiz(quizId)
+    await fetchQuizes()
+  } catch (e: any) {
+    error.value = e.message || 'Kunne ikke slette quizzen.'
+  }
 }
 
 async function fetchQuizes() {
@@ -108,24 +120,38 @@ async function fetchQuizes() {
 
         <template v-else-if="quizzes && quizzes.length">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <router-link
+            <div
               v-for="quiz in quizzes"
               :key="quiz.id"
-              :to="{ name: 'quiz', params: { id: quiz.id } }"
-              class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+              class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow"
             >
               <div class="card-body">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <ClipboardDocumentCheckIcon class="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <h2 class="font-semibold">{{ quiz.title }}</h2>
-                    <p class="text-sm text-base-content/50">Quiz</p>
-                  </div>
+                <div class="flex items-center justify-between gap-4">
+
+                  <router-link
+                    :to="{ name: 'quiz', params: { id: quiz.id } }"
+                    class="flex items-center gap-3 flex-1"
+                  >
+                    <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <ClipboardDocumentCheckIcon class="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h2 class="font-semibold">{{ quiz.title }}</h2>
+                      <p class="text-sm text-base-content/50">Quiz</p>
+                    </div>
+                  </router-link>
+
+                  <button
+                    v-if="user?.role === 'admin'"
+                    class="btn btn-sm btn-error btn-outline"
+                    @click="onDeleteQuiz(quiz.id)"
+                  >
+                    Fjern
+                  </button>
+
                 </div>
               </div>
-            </router-link>
+            </div>
           </div>
         </template>
 

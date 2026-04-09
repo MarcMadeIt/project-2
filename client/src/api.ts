@@ -250,3 +250,18 @@ export async function createQuiz(payload: CreateQuizRequest) {
 
   return data
 }
+
+export async function deleteQuiz(quizId: string) {
+  const res = await fetch(`${API_BASE}/quizzes/${quizId}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  })
+
+  const data = await res.json().catch(() => ({}))
+
+  if (!res.ok) {
+    throw new Error(data?.error ?? 'Kunne ikke slette quiz')
+  }
+
+  return data
+}
