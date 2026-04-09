@@ -195,3 +195,58 @@ export async function getAllResults() {
 
   return data.results;
 }
+
+export interface CreateOptionRequest {
+  text: string
+}
+
+export interface CreateSingleChoiceQuestionRequest {
+  type: 'single_choice'
+  questionText: string
+  options: CreateOptionRequest[]
+  correctAnswers: number[]
+}
+
+export interface CreateMultipleChoiceQuestionRequest {
+  type: 'multiple_choice'
+  questionText: string
+  options: CreateOptionRequest[]
+  correctAnswers: number[]
+}
+
+export interface CreateClozeQuestionRequest {
+  type: 'cloze'
+  questionText: string
+  acceptedAnswers: string[]
+  caseSensitive?: boolean
+  trimWhitespace?: boolean
+}
+
+export type CreateQuestionRequest =
+  | CreateSingleChoiceQuestionRequest
+  | CreateMultipleChoiceQuestionRequest
+  | CreateClozeQuestionRequest
+
+export interface CreateQuizRequest {
+  title: string
+  description: string
+  category: string
+  difficulty: string
+  questions: CreateQuestionRequest[]
+}
+
+export async function createQuiz(payload: CreateQuizRequest) {
+  const res = await fetch(`${API_BASE}/quizzes`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload),
+  })
+
+  const data = await res.json().catch(() => ({}))
+
+  if (!res.ok) {
+    throw new Error(data?.error ?? 'Kunne ikke oprette quiz')
+  }
+
+  return data
+}

@@ -9,6 +9,8 @@ import QuizView from '@/views/Quiz.vue'
 import ResultsView from '@/views/Results.vue'
 import ResultDetailView from '@/views/ResultDetail.vue'
 import AdminResultsView from '@/views/AdminResults.vue'
+import AdminCreateQuizView from '@/views/AdminCreateQuiz.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,6 +59,11 @@ const router = createRouter({
       path: '/admin/results',
       name: 'admin-results',
       component: AdminResultsView,
+    },
+    {
+      path: '/admin/create-quiz',
+      name: 'admin-create-quiz',
+      component: AdminCreateQuizView,
     }
   ],
 })

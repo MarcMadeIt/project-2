@@ -168,7 +168,8 @@ async function fetchQuizes() {
             </div>
           </router-link>
 
-          <div
+          <router-link
+            :to="{ name: 'admin-create-quiz' }"
             class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow border border-primary/10"
           >
             <div class="card-body">
@@ -182,7 +183,7 @@ async function fetchQuizes() {
                 </div>
               </div>
             </div>
-          </div>
+          </router-link>
         </template>
       </div>
     </main>
