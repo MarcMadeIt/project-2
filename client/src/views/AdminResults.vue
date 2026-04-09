@@ -13,6 +13,8 @@ interface AdminResult {
   maxPoints: number
   percentage: number
   submittedAt: string
+  timeTakenSeconds?: number
+
 }
 
 const results = ref<AdminResult[]>([])
@@ -21,6 +23,16 @@ const errorMessage = ref('')
 
 function formatDate(date: string) {
   return new Date(date).toLocaleString('da-DK')
+}
+
+function formatDuration(seconds: number | undefined) {
+  if (seconds == null) return '–'
+
+  const m = Math.floor(seconds / 60)
+  const s = seconds % 60
+
+  if (m === 0) return `${s}s`
+  return `${m}m ${s}s`
 }
 
 onMounted(async () => {
@@ -69,6 +81,7 @@ onMounted(async () => {
               <th>Quiz</th>
               <th>Score</th>
               <th>Procent</th>
+              <th>Tid brugt</th>
               <th>Tidspunkt</th>
             </tr>
           </thead>
@@ -82,6 +95,7 @@ onMounted(async () => {
                   {{ result.percentage }}%
                 </span>
               </td>
+              <td>{{ formatDuration(result.timeTakenSeconds) }}</td>
               <td>{{ formatDate(result.submittedAt) }}</td>
             </tr>
           </tbody>
