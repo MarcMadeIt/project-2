@@ -1,0 +1,15 @@
+[
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "email": "user@test.dk",
+    "passwordHash": "$2b$10$qOkTmGWffaHG2rHLh/1/AuJpunMlCBkyC7JTXl/3gbwpni9tlVh3y",
+    "createdAt": "2026-04-07T00:00:00.000Z"
+  },
+  {
+    "id": "28dcb3c0-6607-466c-8935-8ea642075bef",
+    "email": "din@email.com",
+    "passwordHash": "$2b$10$T7XtFeVZwjnU62jnmysGKutewQ.xtEkzI/50WAYgpcmbGO6GOttPy",
+    "role": "user",
+    "createdAt": "2026-04-07T10:56:54.093Z"
+  }
+]

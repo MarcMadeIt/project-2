@@ -13,4 +13,4 @@ dist/
 frontend/dist/
 
 # Logs
-*.log
+*.lognode_modules/
