@@ -2,7 +2,7 @@
 
 > Vue 3 + Express + TypeScript
 
-Et fullstack quiz-system med rollebaseret adgang (admin/bruger), XML-baserede quizzer og aktivitetslog.
+Et fullstack quiz-system med rollebaseret adgang (admin/bruger), JSON-baserede quizzer og aktivitetslog.
 
 ---
 
