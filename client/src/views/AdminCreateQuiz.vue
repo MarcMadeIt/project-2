@@ -81,8 +81,9 @@ const uploadError = ref('')
 
 function onFileSelected(event: Event) {
   const input = event.target as HTMLInputElement
-  if (input.files && input.files.length > 0) {
-    selectedFile.value = input.files[0]
+  const file = input.files?.item(0)
+  if (file) {
+    selectedFile.value = file
   }
 }
 
@@ -90,12 +91,13 @@ async function onUploadFile() {
   uploadSuccess.value = ''
   uploadError.value = ''
 
-  if (!selectedFile.value) {
+  const file = selectedFile.value
+  if (!file) {
     uploadError.value = 'Vælg en fil først.'
     return
   }
 
-  const ext = selectedFile.value.name.split('.').pop()?.toLowerCase()
+  const ext = file.name.split('.').pop()?.toLowerCase()
   if (ext !== 'json' && ext !== 'xml') {
     uploadError.value = 'Kun .json og .xml filer er tilladt.'
     return
@@ -103,7 +105,7 @@ async function onUploadFile() {
 
   uploadLoading.value = true
   try {
-    await uploadQuizFile(selectedFile.value)
+    await uploadQuizFile(file)
     router.push('/home')
   } catch (e) {
     uploadError.value = e instanceof Error ? e.message : 'Kunne ikke uploade fil.'
@@ -123,17 +125,15 @@ async function onSubmit() {
   errorMessage.value = ''
 
   // frontend safety check
-    if (
+  if (
     !title.value.trim() ||
     !description.value.trim() ||
     !category.value.trim() ||
     !difficulty.value.trim() ||
     questions.value.some(
-        (q) =>
-        !q.questionText.trim() ||
-        (q.type !== 'cloze' && q.options.some((opt) => !opt.trim())),
+      (q) => !q.questionText.trim() || (q.type !== 'cloze' && q.options.some((opt) => !opt.trim())),
     )
-    ) {
+  ) {
     errorMessage.value = 'Udfyld alle felter.'
     return
   }
@@ -145,32 +145,32 @@ async function onSubmit() {
     category: category.value,
     difficulty: difficulty.value,
     questions: questions.value.map((q) => {
-    if (q.type === 'cloze') {
+      if (q.type === 'cloze') {
         return {
-        type: 'cloze' as const,
-        questionText: q.questionText,
-        acceptedAnswers: q.acceptedAnswers.filter((a) => a.trim() !== ''),
-        caseSensitive: q.caseSensitive,
-        trimWhitespace: q.trimWhitespace,
+          type: 'cloze' as const,
+          questionText: q.questionText,
+          acceptedAnswers: q.acceptedAnswers.filter((a) => a.trim() !== ''),
+          caseSensitive: q.caseSensitive,
+          trimWhitespace: q.trimWhitespace,
         }
-    }
+      }
 
-    if (q.type === 'multiple_choice') {
+      if (q.type === 'multiple_choice') {
         return {
-        type: 'multiple_choice' as const,
-        questionText: q.questionText,
-        options: q.options.map((o) => ({ text: o })),
-        correctAnswers: q.correctAnswers,
+          type: 'multiple_choice' as const,
+          questionText: q.questionText,
+          options: q.options.map((o) => ({ text: o })),
+          correctAnswers: q.correctAnswers,
         }
-    }
+      }
 
-    return {
+      return {
         type: 'single_choice' as const,
         questionText: q.questionText,
         options: q.options.map((o) => ({ text: o })),
         correctAnswers: q.correctAnswers.slice(0, 1),
-    }
-    })
+      }
+    }),
   }
 
   loading.value = true
@@ -180,12 +180,12 @@ async function onSubmit() {
 
     successMessage.value = 'Quiz oprettet.'
 
-    // reset form 
+    // reset form
     title.value = ''
     description.value = ''
     category.value = ''
     difficulty.value = 'medium'
-    questions.value = [createEmptyQuestion()]  
+    questions.value = [createEmptyQuestion()]
   } catch (e) {
     errorMessage.value = e instanceof Error ? e.message : 'Kunne ikke oprette quiz.'
   } finally {
@@ -272,10 +272,7 @@ async function onSubmit() {
 
             <label class="form-control w-full">
               <span class="label-text mb-1">Beskrivelse</span>
-              <textarea
-                v-model="description"
-                class="textarea textarea-bordered w-full"
-              ></textarea>
+              <textarea v-model="description" class="textarea textarea-bordered w-full"></textarea>
             </label>
 
             <label class="form-control w-full">
@@ -296,128 +293,113 @@ async function onSubmit() {
           <!-- one question -->
           <div class="space-y-6">
             <div class="flex justify-between items-center">
-                <h2 class="text-lg font-semibold">Spørgsmål</h2>
-                <button class="btn btn-sm btn-outline" @click="addQuestion">
+              <h2 class="text-lg font-semibold">Spørgsmål</h2>
+              <button class="btn btn-sm btn-outline" @click="addQuestion">
                 + Tilføj spørgsmål
-                </button>
+              </button>
             </div>
 
             <div
-                v-for="(question, qIndex) in questions"
-                :key="qIndex"
-                class="card bg-base-200 p-4 space-y-4"
+              v-for="(question, qIndex) in questions"
+              :key="qIndex"
+              class="card bg-base-200 p-4 space-y-4"
             >
-                <div class="flex justify-between items-center">
+              <div class="flex justify-between items-center">
                 <h3 class="font-semibold">Spørgsmål {{ qIndex + 1 }}</h3>
-                <button
-                    class="btn btn-xs btn-error"
-                    @click="removeQuestion(qIndex)"
-                >
-                    Fjern
-                </button>
-                </div>
+                <button class="btn btn-xs btn-error" @click="removeQuestion(qIndex)">Fjern</button>
+              </div>
 
-                <!-- Question type -->
-                <label class="form-control w-full">
+              <!-- Question type -->
+              <label class="form-control w-full">
                 <span class="label-text mb-1">Type</span>
                 <select v-model="question.type" class="select select-bordered w-full">
-                    <option value="single_choice">Single choice</option>
-                    <option value="multiple_choice">Multiple choice</option>
-                    <option value="cloze">Cloze</option>
+                  <option value="single_choice">Single choice</option>
+                  <option value="multiple_choice">Multiple choice</option>
+                  <option value="cloze">Cloze</option>
                 </select>
-                </label>
+              </label>
 
-                <!-- Question text -->
-                <label class="form-control w-full">
+              <!-- Question text -->
+              <label class="form-control w-full">
                 <span class="label-text mb-1">Spørgsmålstekst</span>
                 <textarea
-                    v-model="question.questionText"
-                    class="textarea textarea-bordered w-full"
+                  v-model="question.questionText"
+                  class="textarea textarea-bordered w-full"
                 ></textarea>
-                </label>
+              </label>
 
-                <!-- CHOICE QUESTIONS -->
-                <div v-if="question.type !== 'cloze'" class="space-y-2">
+              <!-- CHOICE QUESTIONS -->
+              <div v-if="question.type !== 'cloze'" class="space-y-2">
                 <div class="flex justify-between items-center">
-                    <span class="label-text">Svarmuligheder</span>
-                    <button
-                    class="btn btn-xs btn-outline"
-                    @click="addOption(question)"
-                    >
+                  <span class="label-text">Svarmuligheder</span>
+                  <button class="btn btn-xs btn-outline" @click="addOption(question)">
                     + Tilføj svar
-                    </button>
+                  </button>
                 </div>
 
                 <div
-                    v-for="(option, oIndex) in question.options"
-                    :key="oIndex"
-                    class="flex gap-2 items-center"
+                  v-for="(option, oIndex) in question.options"
+                  :key="oIndex"
+                  class="flex gap-2 items-center"
                 >
-                    <input
-                    v-model="question.options[oIndex]"
-                    class="input input-bordered w-full"
-                    />
+                  <input v-model="question.options[oIndex]" class="input input-bordered w-full" />
 
-                    <button
-                    class="btn btn-xs btn-error"
-                    @click="removeOption(question, oIndex)"
-                    >
+                  <button class="btn btn-xs btn-error" @click="removeOption(question, oIndex)">
                     ✕
-                    </button>
+                  </button>
 
-                    <!-- SINGLE CHOICE -->
-                    <input
+                  <!-- SINGLE CHOICE -->
+                  <input
                     v-if="question.type === 'single_choice'"
                     type="radio"
                     :checked="question.correctAnswers[0] === oIndex"
                     @change="question.correctAnswers = [oIndex]"
-                    />
+                  />
 
-                    <!-- MULTIPLE CHOICE -->
-                    <input
+                  <!-- MULTIPLE CHOICE -->
+                  <input
                     v-if="question.type === 'multiple_choice'"
                     type="checkbox"
                     :checked="question.correctAnswers.includes(oIndex)"
                     @change="
-                        question.correctAnswers.includes(oIndex)
-                        ? question.correctAnswers = question.correctAnswers.filter(i => i !== oIndex)
+                      question.correctAnswers.includes(oIndex)
+                        ? (question.correctAnswers = question.correctAnswers.filter(
+                            (i) => i !== oIndex,
+                          ))
                         : question.correctAnswers.push(oIndex)
                     "
-                    />
+                  />
                 </div>
-                </div>
+              </div>
 
-                <!-- CLOZE -->
-                <div v-if="question.type === 'cloze'" class="space-y-2">
+              <!-- CLOZE -->
+              <div v-if="question.type === 'cloze'" class="space-y-2">
                 <div class="flex justify-between items-center">
-                    <span class="label-text">Accepted answers</span>
-                    <button
-                    class="btn btn-xs btn-outline"
-                    @click="addAcceptedAnswer(question)"
-                    >
+                  <span class="label-text">Accepted answers</span>
+                  <button class="btn btn-xs btn-outline" @click="addAcceptedAnswer(question)">
                     + Tilføj svar
-                    </button>
+                  </button>
                 </div>
 
                 <div
-                    v-for="(ans, aIndex) in question.acceptedAnswers"
-                    :key="aIndex"
-                    class="flex gap-2"
+                  v-for="(ans, aIndex) in question.acceptedAnswers"
+                  :key="aIndex"
+                  class="flex gap-2"
                 >
-                    <input
+                  <input
                     v-model="question.acceptedAnswers[aIndex]"
                     class="input input-bordered w-full"
-                    />
-                    <button
+                  />
+                  <button
                     class="btn btn-xs btn-error"
                     @click="removeAcceptedAnswer(question, aIndex)"
-                    >
+                  >
                     ✕
-                    </button>
+                  </button>
                 </div>
-                </div>
+              </div>
             </div>
-            </div>
+          </div>
 
           <!-- submit -->
           <div class="pt-2">
