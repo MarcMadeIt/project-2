@@ -121,12 +121,7 @@
           "correct": false,
           "points": 0,
           "maxPoints": 1,
-          "correctAnswer": [
-            "hash table",
-            "hashtable",
-            "map",
-            "dictionary"
-          ]
+          "correctAnswer": ["hash table", "hashtable", "map", "dictionary"]
         },
         {
           "questionId": "ds_q08",
@@ -185,10 +180,7 @@
           "correct": false,
           "points": 0,
           "maxPoints": 1,
-          "correctAnswer": [
-            "lifo",
-            "last in first out"
-          ]
+          "correctAnswer": ["lifo", "last in first out"]
         },
         {
           "questionId": "ds_q12",
@@ -197,6 +189,218 @@
           "userAnswerText": [],
           "correct": false,
           "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "push"
+            },
+            {
+              "id": "b",
+              "text": "pop"
+            },
+            {
+              "id": "d",
+              "text": "peek"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "04415d66-b80c-4bc3-8966-23be558b60af",
+      "userId": "00000000-0000-0000-0000-000000000001",
+      "quizId": "quiz_datastructures_001",
+      "quizTitle": "Datastrukturer",
+      "totalPoints": 6.499999999999999,
+      "maxPoints": 12,
+      "percentage": 54.17,
+      "submittedAt": "2026-04-10T06:14:34.739Z",
+      "timeTakenSeconds": 258,
+      "answers": [
+        {
+          "questionId": "ds_q01",
+          "questionText": "Hvilken datastruktur arbejder typisk efter princippet <strong>FIFO</strong>?",
+          "userAnswer": ["b"],
+          "userAnswerText": ["Queue"],
+          "correct": true,
+          "points": 1,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "b",
+              "text": "Queue"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q02",
+          "questionText": "Hvilken datastruktur arbejder typisk efter princippet <strong>LIFO</strong>?",
+          "userAnswer": ["c"],
+          "userAnswerText": ["Stack"],
+          "correct": true,
+          "points": 1,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "c",
+              "text": "Stack"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q03",
+          "questionText": "Hvilke udsagn om et <strong>array</strong> er korrekte?",
+          "userAnswer": ["b", "a"],
+          "userAnswerText": [
+            "Adgang via indeks er normalt hurtig.",
+            "Elementer ligger typisk samlet i hukommelsen."
+          ],
+          "correct": false,
+          "points": 0.6666666666666666,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "Elementer ligger typisk samlet i hukommelsen."
+            },
+            {
+              "id": "b",
+              "text": "Adgang via indeks er normalt hurtig."
+            },
+            {
+              "id": "d",
+              "text": "Et array har ofte fast størrelse."
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q04",
+          "questionText": "Hvad er en væsentlig fordel ved en <strong>linked list</strong> sammenlignet med et array?",
+          "userAnswer": ["b"],
+          "userAnswerText": [
+            "Indsættelse og sletning kan være nemmere, når man har reference til den rigtige position."
+          ],
+          "correct": true,
+          "points": 1,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "b",
+              "text": "Indsættelse og sletning kan være nemmere, når man har reference til den rigtige position."
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q05",
+          "questionText": "Hvilken datastruktur bruges ofte til at håndtere <span style=\"font-style: italic\">funktionskald</span> i et program?",
+          "userAnswer": ["b"],
+          "userAnswerText": ["Stack"],
+          "correct": true,
+          "points": 1,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "b",
+              "text": "Stack"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q06",
+          "questionText": "Hvilke af følgende datastrukturer er <strong>ikke-lineære</strong>?",
+          "userAnswer": ["a"],
+          "userAnswerText": ["Binary tree"],
+          "correct": false,
+          "points": 0.5,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "Binary tree"
+            },
+            {
+              "id": "b",
+              "text": "Graph"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q07",
+          "questionText": "En datastruktur der lagrer data som nøgle-værdi-par, kaldes ofte en <strong>____</strong>.",
+          "userAnswer": "Binary tree, Graph",
+          "userAnswerText": "Binary tree, Graph",
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": ["hash table", "hashtable", "map", "dictionary"]
+        },
+        {
+          "questionId": "ds_q08",
+          "questionText": "Hvad er typisk den gennemsnitlige tidskompleksitet for opslag i en god <strong>hash table</strong>?",
+          "userAnswer": ["a"],
+          "userAnswerText": ["O(1)"],
+          "correct": true,
+          "points": 1,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "O(1)"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q09",
+          "questionText": "Hvilke udsagn om <strong>binary search trees</strong> er korrekte?",
+          "userAnswer": ["b"],
+          "userAnswerText": ["De er altid perfekt balancerede."],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "Venstre barn er mindre end noden, og højre barn er større end noden."
+            },
+            {
+              "id": "c",
+              "text": "Søgning kan være effektiv, hvis træet er balanceret."
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q10",
+          "questionText": "Hvilken datastruktur er mest oplagt til at behandle elementer i den rækkefølge, de ankommer?",
+          "userAnswer": ["b"],
+          "userAnswerText": ["Stack"],
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": [
+            {
+              "id": "a",
+              "text": "Queue"
+            }
+          ]
+        },
+        {
+          "questionId": "ds_q11",
+          "questionText": "En <strong>stack</strong> bruger princippet <strong>____</strong>.",
+          "userAnswer": "test",
+          "userAnswerText": "test",
+          "correct": false,
+          "points": 0,
+          "maxPoints": 1,
+          "correctAnswer": ["lifo", "last in first out"]
+        },
+        {
+          "questionId": "ds_q12",
+          "questionText": "Hvilke operationer forbindes typisk med en <strong>stack</strong>?",
+          "userAnswer": ["a"],
+          "userAnswerText": ["push"],
+          "correct": false,
+          "points": 0.3333333333333333,
           "maxPoints": 1,
           "correctAnswer": [
             {
